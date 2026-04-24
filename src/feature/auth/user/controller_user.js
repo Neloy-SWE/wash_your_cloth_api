@@ -1,25 +1,28 @@
+import e from "express";
 import db from "../../../model/index_model.js";
+import validatorRegistrationUser from "../../../validator/validator_registration_user.js";
+import serviceUser from "./service_user.js";
 
 const { User } = db;
 
-const createUser = async (req, res) => {
-    const { firstName, lastName, address, phone, longitude, latitude, password } = req.body;
+const createUser = async (req, res, next) => {
+    try {
+        const { error } = validatorRegistrationUser.validate(req.body);
+        // console.error("validation error: ", error.details);
 
-    User.create({
-        firstName,
-        lastName,
-        address,
-        phone,
-        longitude,
-        latitude,
-        password,
-    })
-    .then((user) => {
-        res.status(201).json(user);
-    })
-    .catch((error) => {
-        res.status(400).json({ error: error.message });
-    });
+        if (error) {
+            const errorUser = error.details;
+            errorUser.statusCode = 400;
+            next(errorUser);
+        }
+
+        const result = await serviceUser(req.body);
+        res.status(201).json(result);
+    }
+    catch (error) {
+        next(error);
+    }
 }
+
 
 export { createUser };

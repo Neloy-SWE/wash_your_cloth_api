@@ -28,8 +28,8 @@ app.use("/auth", routerUser);
 
 // Global error handling middleware
 app.use((error, req, res, next) => {
-    console.error(error);
-    // res.status(500).json({ error: "Internal Server Error" });
+    // console.error("global error handler: ", error);
+    res.status(error.statusCode || 500).json({ error: error.errors?.map(e => e.message) || error?.map(e => e.message) || "Internal Server Error" });
 });
 
 sequelize.sync({ alter: true }).then(() => {
