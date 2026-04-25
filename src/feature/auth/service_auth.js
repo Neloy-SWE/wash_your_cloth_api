@@ -1,8 +1,7 @@
-import db from "../../../model/index_model.js";
-import { hashPassword } from "../../../utils/manager_password.js";
-import validatorRegistrationUser from "../../../validator/validator_registration_user.js";
+import db from "../../model/index_model.js";
+import validatorRegistration from "../../validator/validator_registration.js";
 
-const serviceUser = async (
+const serviceAuthRegistration = async (
     {
         firstName,
         lastName,
@@ -41,4 +40,4 @@ const serviceUser = async (
 
 }
 
-export default serviceUser;
+export { serviceAuthRegistration };

@@ -14,8 +14,8 @@ const User = sequelize.define("User", {
         allowNull: false,
         validate: {
             len: {
-                args: [2, 50],
-                msg: "First name must be between 2 and 50 characters long",
+                args: [2, 200],
+                msg: "First name must be between 2 and 200 characters long",
             }
         }
     },
@@ -24,8 +24,8 @@ const User = sequelize.define("User", {
         allowNull: false,
         validate: {
             len: {
-                args: [2, 50],
-                msg: "Last name must be between 2 and 50 characters long",
+                args: [2, 200],
+                msg: "Last name must be between 2 and 200 characters long",
             }
         }
     },

@@ -1,5 +1,5 @@
 import express from "express";
-import routerUser from "./feature/auth/user/route_user.js";
+import routerAuth from "./feature/auth/route_auth.js";
 import dotenv from 'dotenv';
 import dotenvExpand from 'dotenv-expand';
 import { sequelize } from "./config/database.js";
@@ -24,12 +24,13 @@ app.get("/", (req, res) => {
 });
 
 // Register routes
-app.use("/auth", routerUser);
+app.use("/auth", routerAuth);
 
 // Global error handling middleware
 app.use((error, req, res, next) => {
     // console.error("global error handler: ", error);
-    res.status(error.statusCode || 500).json({ error: error.errors?.map(e => e.message) || error?.map(e => e.message) || "Internal Server Error" });
+    res.status(error.statusCode || 500)
+        .json({ error: error.errors?.map(e => e.message) || error?.map(e => e.message) || "Internal Server Error" });
 });
 
 sequelize.sync({ alter: true }).then(() => {
