@@ -54,7 +54,7 @@ const User = sequelize.define("User", {
         type: DataTypes.STRING,
         allowNull: false,
     },
-    isCompleted: {
+    verified: {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
     },

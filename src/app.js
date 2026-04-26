@@ -2,7 +2,7 @@ import express from "express";
 import routerAuth from "./feature/auth/route_auth.js";
 import dotenv from 'dotenv';
 import dotenvExpand from 'dotenv-expand';
-import { sequelize } from "./config/database.js";
+import db from "./model/index_model.js";
 
 const myEnv = dotenv.config();
 dotenvExpand.expand(myEnv);
@@ -14,7 +14,7 @@ app.use(express.json());
 app.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH");
-    // res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, security-token");
     next();
 });
 
@@ -30,10 +30,11 @@ app.use("/auth", routerAuth);
 app.use((error, req, res, next) => {
     // console.error("global error handler: ", error);
     res.status(error.statusCode || 500)
-        .json({ error: error.errors?.map(e => e.message) || error?.map(e => e.message) || "Internal Server Error" });
+    .json({ error: error.errors?.map(e => e.message) || error?.map(e => e.message) || "Internal Server Error" });
+    // .json({ error: error.errors?.map(e => e.message) || "Internal Server Error" });
 });
 
-sequelize.sync({ alter: true }).then(() => {
+db.sequelize.sync({ alter: true }).then(() => {
     console.log("Database synchronized");
     const PORT = process.env.PORT;
     app.listen(PORT, () => {
