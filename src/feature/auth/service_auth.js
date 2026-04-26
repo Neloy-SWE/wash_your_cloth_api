@@ -17,7 +17,7 @@ const serviceAuthRegistration = async (
     }
 ) => {
     try {
-        const result = await db.User.create({
+        await db.User.create({
             firstName,
             lastName,
             address,
@@ -28,15 +28,12 @@ const serviceAuthRegistration = async (
             role,
         });
 
-        if (result) {
-            return {
-                status: "success",
-                otprequestId: "registrationUser",
-                message: "User registration successful",
-            }
-        }
+        return {
+            status: "success",
+            otprequestId: "registrationUser",
+            message: "User registration successful",
+        };
 
-        return result;
     } catch (error) {
         // console.log("service error", error);
         throw error;
@@ -65,14 +62,27 @@ const serviceAuthLogin = async ({
             generateError("Invalid information", 400);
         }
 
-        const token = generateToken({ id: user.id, role: user.role });
-
         let body;
         let statusCode;
+
         if (user.verified) {
+            let { token, refreshToken, expirationToken, expirationRefreshToken } = generateToken({ id: user.id, role: user.role });
+
+            await db.Token.create({
+                token,
+                expirationToken,
+                refreshToken,
+                expirationRefreshToken,
+                userId: user.id,
+            });
+
             body = {
                 status: "success",
                 message: "User login successful",
+                token: token,
+                refreshToken: refreshToken,
+                expirationToken: expirationToken,
+                expirationRefreshToken: expirationRefreshToken,
             };
             statusCode = 200;
         } else {
@@ -84,7 +94,6 @@ const serviceAuthLogin = async ({
             statusCode = 202;
         }
         return {
-            token,
             body,
             statusCode,
         };
@@ -92,6 +101,10 @@ const serviceAuthLogin = async ({
         // console.log("service error", error);
         throw error;
     }
+}
+
+const serviceAuthOTP = async () => {
+
 }
 
 export { serviceAuthRegistration, serviceAuthLogin };

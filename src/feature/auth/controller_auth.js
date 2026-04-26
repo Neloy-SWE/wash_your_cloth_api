@@ -20,13 +20,9 @@ const controllerLogin = async (req, res, next) => {
     try {
 
         managerError(req.body, "login");
+        
         const result = await serviceAuthLogin(req.body);
-        res.setHeader("security-token", result.token);
-
-
-
         res.status(result.statusCode).json(result.body);
-
     }
     catch (error) {
         // console.log("controller error", error);

@@ -1,12 +1,21 @@
 import jwt from "jsonwebtoken";
 import dotenv from 'dotenv';
 import dotenvExpand from 'dotenv-expand';
+import getExpirationDate from "./manager_time.js";
 
 const myEnv = dotenv.config();
 dotenvExpand.expand(myEnv);
 
 export const generateToken = (payload) => {
-    return jwt.sign(payload, process.env.JWT_SECRET, {
+    const token = jwt.sign(payload, process.env.JWT_SECRET, {
         expiresIn: process.env.JWT_EXPIRE,
     });
+    const expirationToken = getExpirationDate(process.env.JWT_EXPIRE);
+
+    const refreshToken = jwt.sign(payload, process.env.JWT_SECRET, {
+        expiresIn: process.env.JWT_REFRESH_EXPIRE,
+    });
+    const expirationRefreshToken = getExpirationDate(process.env.JWT_REFRESH_EXPIRE);
+
+    return { token, refreshToken, expirationToken, expirationRefreshToken }
 };
