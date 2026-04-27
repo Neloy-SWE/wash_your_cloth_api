@@ -1,8 +1,8 @@
 import { managerError } from "../../utils/manager_error.js";
 import validatorRegistration from "../../validator/validator_registration.js";
-import { serviceAuthLogin, serviceAuthRegistration } from "./service_auth.js";
+import { serviceAuthLogin, serviceAuthRefreshToken, serviceAuthRegistration } from "./service_auth.js";
 
-const controllerAuthRegistration = async (req, res, next) => {
+export const controllerAuthRegistration = async (req, res, next) => {
     try {
 
         managerError(req.body, "registration");
@@ -16,11 +16,11 @@ const controllerAuthRegistration = async (req, res, next) => {
     }
 }
 
-const controllerLogin = async (req, res, next) => {
+export const controllerAuthLogin = async (req, res, next) => {
     try {
 
         managerError(req.body, "login");
-        
+
         const result = await serviceAuthLogin(req.body);
         res.status(result.statusCode).json(result.body);
     }
@@ -30,5 +30,19 @@ const controllerLogin = async (req, res, next) => {
     }
 }
 
+export const controllerAuthRefreshToken = async (req, res, next) => {
+    try {
 
-export { controllerAuthRegistration, controllerLogin };
+        const { refreshToken } = req.body;
+        if (!refreshToken) {
+            generateError("Refresh token is required", 400);
+        }
+
+        const result = await serviceAuthRefreshToken(refreshToken);
+        res.status(result.statusCode).json(result.body);
+
+    } catch (error) {
+        // console.log("controller error", error);
+        next(error);
+    }
+}

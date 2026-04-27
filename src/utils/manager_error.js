@@ -1,7 +1,7 @@
 import validatorLoginUser from "../validator/validator_login.js";
 import validatorRegistration from "../validator/validator_registration.js";
 
-const managerError = (object, key) => {
+export const managerError = (object, key) => {
     let currentError;
     switch (key) {
         case "registration":
@@ -26,12 +26,10 @@ const managerError = (object, key) => {
     }
 }
 
-const generateError = (message, statusCode) => {
+export const generateError = (message, statusCode) => {
     const error = new Error(message);
     const userError = [error];
     userError.statusCode = statusCode;
     // console.log("generate error", userError);
     throw userError;
 }
-
-export { managerError, generateError };

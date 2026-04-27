@@ -1,10 +1,11 @@
+import { Op } from "sequelize";
 import db from "../../model/index_model.js";
 import { generateError } from "../../utils/manager_error.js";
-import { generateToken, getToken } from "../../utils/manager_jwt_token.js";
+import { generateToken, getToken, verifyToken } from "../../utils/manager_jwt_token.js";
 import { comparePassword } from "../../utils/manager_password.js";
 import validatorRegistration from "../../validator/validator_registration.js";
 
-const serviceAuthRegistration = async (
+export const serviceAuthRegistration = async (
     {
         firstName,
         lastName,
@@ -41,7 +42,7 @@ const serviceAuthRegistration = async (
 
 }
 
-const serviceAuthLogin = async ({
+export const serviceAuthLogin = async ({
     phone,
     password,
     role,
@@ -72,7 +73,7 @@ const serviceAuthLogin = async ({
                 where: {
                     userId: user.id,
                     expirationRefreshToken: {
-                        [db.sequelize.Op.gt]: new Date(),
+                        [Op.gt]: new Date(),
                     }
                 },
                 order: [['createdAt', 'DESC']],
@@ -113,9 +114,6 @@ const serviceAuthLogin = async ({
                     expirationRefreshToken: expirationRefreshToken,
                 };
             }
-
-
-
             statusCode = 200;
         } else {
             body = {
@@ -135,8 +133,61 @@ const serviceAuthLogin = async ({
     }
 }
 
-const serviceAuthOTP = async () => {
+export const serviceAuthRefreshToken = async (refreshToken) => {
+    try {
+        const payload = verifyToken(refreshToken);
+        const existingToken = await db.Token.findOne({
+            where: {
+                userId: payload.id,
+                expirationRefreshToken: {
+                    [Op.gt]: new Date(),
+                }
+            },
+            order: [['createdAt', 'DESC']],
+        });
 
+        if (refreshToken !== existingToken?.refreshToken) {
+            generateError("Invalid token", 400);
+        }
+
+        let body;
+        let statusCode;
+
+        if (existingToken) {
+            const { token, expirationToken } = getToken({id: payload.id, role: payload.role});
+            // existingToken.token = token;
+            // existingToken.expirationToken = expirationToken;
+            // await existingToken.save();
+
+            body = {
+                status: "success",
+                message: "token refresh successful",
+                token: token,
+                refreshToken: existingToken.refreshToken,
+                expirationToken: expirationToken,
+                expirationRefreshToken: existingToken.expirationRefreshToken,
+            };
+            statusCode = 200;
+        }
+        else {
+            body = {
+                status: "sessionExpired",
+                message: "Session expired. Please login again.",
+            }
+            statusCode = 401;
+        }
+
+        return {
+            body,
+            statusCode,
+        }
+
+    } catch (error) {
+        // console.log("service error", error);
+        throw error;
+    }
 }
 
-export { serviceAuthRegistration, serviceAuthLogin };
+export const serviceAuthOTP = async () => {
+
+}
