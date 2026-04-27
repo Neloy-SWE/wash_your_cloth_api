@@ -7,10 +7,8 @@ const myEnv = dotenv.config();
 dotenvExpand.expand(myEnv);
 
 export const generateToken = (payload) => {
-    const token = jwt.sign(payload, process.env.JWT_SECRET, {
-        expiresIn: process.env.JWT_EXPIRE,
-    });
-    const expirationToken = getExpirationDate(process.env.JWT_EXPIRE);
+
+    const { token, expirationToken } = getToken(payload);
 
     const refreshToken = jwt.sign(payload, process.env.JWT_SECRET, {
         expiresIn: process.env.JWT_REFRESH_EXPIRE,
@@ -18,4 +16,12 @@ export const generateToken = (payload) => {
     const expirationRefreshToken = getExpirationDate(process.env.JWT_REFRESH_EXPIRE);
 
     return { token, refreshToken, expirationToken, expirationRefreshToken }
+};
+
+export const getToken = (payload) => {
+    const token = jwt.sign(payload, process.env.JWT_SECRET, {
+        expiresIn: process.env.JWT_EXPIRE,
+    });
+    const expirationToken = getExpirationDate(process.env.JWT_EXPIRE);
+    return { token, expirationToken }
 };

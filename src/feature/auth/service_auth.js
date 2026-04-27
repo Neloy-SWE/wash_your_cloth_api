@@ -1,6 +1,6 @@
 import db from "../../model/index_model.js";
 import { generateError } from "../../utils/manager_error.js";
-import { generateToken } from "../../utils/manager_jwt_token.js";
+import { generateToken, getToken } from "../../utils/manager_jwt_token.js";
 import { comparePassword } from "../../utils/manager_password.js";
 import validatorRegistration from "../../validator/validator_registration.js";
 
@@ -66,24 +66,56 @@ const serviceAuthLogin = async ({
         let statusCode;
 
         if (user.verified) {
-            let { token, refreshToken, expirationToken, expirationRefreshToken } = generateToken({ id: user.id, role: user.role });
+            const payload = { id: user.id, role: user.role };
 
-            await db.Token.create({
-                token,
-                expirationToken,
-                refreshToken,
-                expirationRefreshToken,
-                userId: user.id,
+            const existingToken = await db.Token.findOne({
+                where: {
+                    userId: user.id,
+                    expirationRefreshToken: {
+                        [db.sequelize.Op.gt]: new Date(),
+                    }
+                },
+                order: [['createdAt', 'DESC']],
             });
 
-            body = {
-                status: "success",
-                message: "User login successful",
-                token: token,
-                refreshToken: refreshToken,
-                expirationToken: expirationToken,
-                expirationRefreshToken: expirationRefreshToken,
-            };
+            if (existingToken) {
+                const { token, expirationToken } = getToken(payload);
+                // existingToken.token = token;
+                // existingToken.expirationToken = expirationToken;
+                // await existingToken.save();
+
+                body = {
+                    status: "success",
+                    message: "User login successful",
+                    token: token,
+                    refreshToken: existingToken.refreshToken,
+                    expirationToken: expirationToken,
+                    expirationRefreshToken: existingToken.expirationRefreshToken,
+                };
+            }
+            else {
+                let { token, refreshToken, expirationToken, expirationRefreshToken } = generateToken(payload);
+
+                await db.Token.create({
+                    // token,
+                    // expirationToken,
+                    refreshToken,
+                    expirationRefreshToken,
+                    userId: user.id,
+                });
+
+                body = {
+                    status: "success",
+                    message: "User login successful",
+                    token: token,
+                    refreshToken: refreshToken,
+                    expirationToken: expirationToken,
+                    expirationRefreshToken: expirationRefreshToken,
+                };
+            }
+
+
+
             statusCode = 200;
         } else {
             body = {

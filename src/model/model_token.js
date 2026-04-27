@@ -7,14 +7,14 @@ const Token = sequelize.define("Token", {
         defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
     },
-    token: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
-    expirationToken: {
-        type: DataTypes.DATE,
-        allowNull: false,
-    },
+    // token: {
+    //     type: DataTypes.STRING,
+    //     allowNull: false,
+    // },
+    // expirationToken: {
+    //     type: DataTypes.DATE,
+    //     allowNull: false,
+    // },
     refreshToken: {
         type: DataTypes.STRING,
         allowNull: false,
