@@ -17,7 +17,7 @@ const OTP = sequelize.define("OTP", {
             }
         },
     },
-    expireTime: {
+    expirationTime: {
         type: DataTypes.DATE,
         allowNull: false,
     },
@@ -30,7 +30,7 @@ const OTP = sequelize.define("OTP", {
         allowNull: false,
     },
     metaData: {
-        type: DataTypes.JSON,
+        type: DataTypes.STRING,
         allowNull: true,
     },
 },

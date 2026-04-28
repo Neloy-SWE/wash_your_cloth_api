@@ -4,6 +4,7 @@ import { generateError } from "../../utils/manager_error.js";
 import { generateToken, getToken, verifyToken } from "../../utils/manager_jwt_token.js";
 import { comparePassword } from "../../utils/manager_password.js";
 import validatorRegistration from "../../validator/validator_registration.js";
+import { generateOTP, getOTPObject } from "../../utils/manager_otp.js";
 
 export const serviceAuthRegistration = async (
     {
@@ -18,7 +19,7 @@ export const serviceAuthRegistration = async (
     }
 ) => {
     try {
-        await db.User.create({
+        const user = await db.User.create({
             firstName,
             lastName,
             address,
@@ -29,9 +30,12 @@ export const serviceAuthRegistration = async (
             role,
         });
 
+        const otpObject = getOTPObject(user.id, "registrationUser", "");
+        await db.OTP.create(otpObject);
+
         return {
             status: "success",
-            otprequestId: "registrationUser",
+            otpRequestId: "registrationUser",
             message: "User registration successful",
         };
 
@@ -116,9 +120,13 @@ export const serviceAuthLogin = async ({
             }
             statusCode = 200;
         } else {
+
+            const otpObject = getOTPObject(user.id, "verificationUser", "");
+            await db.OTP.create(otpObject);
+
             body = {
                 status: "unverified",
-                otprequestId: "verificationUser",
+                otpRequestId: "verificationUser",
                 message: "User is not verified. Please verify your account.",
             };
             statusCode = 202;
@@ -154,7 +162,7 @@ export const serviceAuthRefreshToken = async (refreshToken) => {
         let statusCode;
 
         if (existingToken) {
-            const { token, expirationToken } = getToken({id: payload.id, role: payload.role});
+            const { token, expirationToken } = getToken({ id: payload.id, role: payload.role });
             // existingToken.token = token;
             // existingToken.expirationToken = expirationToken;
             // await existingToken.save();

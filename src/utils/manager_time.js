@@ -1,4 +1,4 @@
-const getExpirationDate = (durationStr) => {
+const getExpirationTime = (durationStr) => {
   const match = durationStr.match(/^(\d+)([smhd])$/);
   const value = parseInt(match[1]);
   const unit = match[2];
@@ -13,4 +13,4 @@ const getExpirationDate = (durationStr) => {
   return new Date(Date.now() + value * multipliers[unit]);
 };
 
-export default getExpirationDate;
+export default getExpirationTime;
