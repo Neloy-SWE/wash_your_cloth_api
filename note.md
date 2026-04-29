@@ -13,3 +13,6 @@ jwt.verify(token, secret, (err, user) => {
 const authHeader = req.headers['authorization'];
 // The header usually looks like "Bearer <token>"
 const token = authHeader && authHeader.split(' ')[1]; 
+
+
+- it will be greate if i create shop table to store shop details and make user to shop one to one relation and add role: shop at user table rather than create separate shop as user table.

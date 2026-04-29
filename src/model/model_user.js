@@ -1,6 +1,6 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../config/database.js";
-import validatorRole from "../validator/validator_role.js";
+import validatorItem from "../validator/validator_item.js";
 import { hashPassword } from "../utils/manager_password.js";
 
 const User = sequelize.define("User", {
@@ -58,13 +58,14 @@ const User = sequelize.define("User", {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
     },
-    role : {
+    role: {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
-           customValidator(value) {
-                validatorRole(value);
-           }
+            customValidator(value) {
+                const validListRole = ["user", "shop"];
+                validatorItem(value, validListRole, "Invalid role", 400);
+            }
         },
     }
 },
@@ -73,10 +74,19 @@ const User = sequelize.define("User", {
     }
 );
 
-User.beforeCreate(async (user) => {
-    const { password } = user;
-    const passwordHash = await hashPassword(password);
-    user.password = passwordHash;
-});
+// User.beforeCreate(async (user) => {
+//     const { password } = user;
+//     const passwordHash = await hashPassword(password);
+//     user.password = passwordHash;
+// });
+
+const hashUserPassword = async (user) => {
+    if (user.changed("password")) {
+        user.password = await hashPassword(user.password);
+    }
+};
+
+User.beforeCreate(hashUserPassword);
+User.beforeUpdate(hashUserPassword);
 
 export default User;

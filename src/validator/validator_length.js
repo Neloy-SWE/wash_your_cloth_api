@@ -1,6 +1,6 @@
 import { generateError } from "../utils/manager_error.js";
 
-const validatorLength = (value, length = 4) => {
+const validatorLength = (value, length) => {
     if (value.length !== length) {
         generateError("Invalid length", 400);
     }
