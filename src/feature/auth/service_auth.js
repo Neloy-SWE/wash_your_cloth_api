@@ -5,19 +5,22 @@ import { generateToken, getToken, verifyToken } from "../../utils/manager_jwt_to
 import { comparePassword } from "../../utils/manager_password.js";
 import validatorRegistration from "../../validator/validator_registration.js";
 import { generateOTP, getOTPObject } from "../../utils/manager_otp.js";
+import dotenv from 'dotenv';
+import dotenvExpand from 'dotenv-expand';
 
-export const serviceAuthRegistration = async (
-    {
-        firstName,
-        lastName,
-        address,
-        phone,
-        longitude,
-        latitude,
-        password,
-        role,
-    }
-) => {
+const myEnv = dotenv.config();
+dotenvExpand.expand(myEnv);
+
+export const serviceAuthRegistration = async ({
+    firstName,
+    lastName,
+    address,
+    phone,
+    longitude,
+    latitude,
+    password,
+    role,
+}) => {
     try {
         const user = await db.User.create({
             firstName,
@@ -31,12 +34,13 @@ export const serviceAuthRegistration = async (
         });
 
         const otpObject = getOTPObject(user.id, "registrationUser", "");
-        await db.OTP.create(otpObject);
+        const otp = await db.OTP.create(otpObject);
 
         return {
-            status: "success",
+            status: "unverified",
             otpRequestId: "registrationUser",
-            message: "User registration successful",
+            message: "Registered! Enter OTP to continue",
+            recordId: otp.id,
         };
 
     } catch (error) {
@@ -122,12 +126,13 @@ export const serviceAuthLogin = async ({
         } else {
 
             const otpObject = getOTPObject(user.id, "verificationUser", "");
-            await db.OTP.create(otpObject);
+            const otp = await db.OTP.create(otpObject);
 
             body = {
                 status: "unverified",
+                message: "Enter OTP to get full access",
                 otpRequestId: "verificationUser",
-                message: "User is not verified. Please verify your account.",
+                recordId: otp.id,
             };
             statusCode = 202;
         }
@@ -180,7 +185,7 @@ export const serviceAuthRefreshToken = async (refreshToken) => {
         else {
             body = {
                 status: "sessionExpired",
-                message: "Session expired. Please login again.",
+                message: "Session expired. Please login again",
             }
             statusCode = 401;
         }
@@ -196,6 +201,49 @@ export const serviceAuthRefreshToken = async (refreshToken) => {
     }
 }
 
-export const serviceAuthOTP = async () => {
+export const serviceAuthOTPSend = async ({
+    recordId,
+    otpRequestId,
+    otpCode,
+}) => {
+    try {
 
+        const recordOTP = await db.OTP.findOne({ where: { id: recordId, otpRequestId } });
+        if (recordOTP.attempts >= process.env.OTP_MAX_ATTEMPTS) {
+            generateError("Too many attempts", 400);
+        }
+        if (recordOTP.expirationTime < new Date() || recordOTP.isUsed || recordOTP.otp !== otpCode) {
+            recordOTP.attempts += 1;
+            await recordOTP.save();
+            generateError("Invalid OTP", 400);
+        }
+        else if (recordOTP.otp === otpCode) {
+            recordOTP.isUsed = true;
+            recordOTP.attempts += 1;
+            await recordOTP.save();
+
+            let body;
+            const user = await db.User.findOne({ where: { id: recordOTP.userId } });
+            if (otpRequestId === "verificationUser" || otpRequestId === "registrationUser") {
+                user.verified = true;
+                body = {
+                    status: "success",
+                    message: "User verified and have full access now",
+                }
+            }
+            else if (otpRequestId === "resetPassword") {/** todo: implement reset pasword logic*/ }
+            else if (otpRequestId === "changePhone") {/** todo: implement change phone logic*/ }
+            await user.save();
+
+            return {
+                body,
+                statusCode: 200,
+            }
+        }
+
+
+    } catch (error) {
+        // console.log("service error", error);
+        throw error;
+    }
 }

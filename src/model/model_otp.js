@@ -1,6 +1,11 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../config/database.js";
 import validatorLength from "../validator/validator_length.js";
+import dotenv from 'dotenv';
+import dotenvExpand from 'dotenv-expand';
+
+const myEnv = dotenv.config();
+dotenvExpand.expand(myEnv);
 
 const OTP = sequelize.define("OTP", {
     id: {
@@ -13,7 +18,7 @@ const OTP = sequelize.define("OTP", {
         allowNull: false,
         validate: {
             customValidator(value) {
-                validatorLength(value);
+                validatorLength(value, process.env.OTP_LENGTH);
             }
         },
     },
@@ -28,6 +33,18 @@ const OTP = sequelize.define("OTP", {
     otpRequestId: {
         type: DataTypes.STRING,
         allowNull: false,
+    },
+    attempts: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0,
+    },
+    resendCount: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0,
+    },
+    resendAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
     },
     metaData: {
         type: DataTypes.STRING,
