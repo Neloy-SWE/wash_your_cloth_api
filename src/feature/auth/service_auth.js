@@ -2,7 +2,7 @@ import { Op } from "sequelize";
 import db from "../../model/index_model.js";
 import { generateError } from "../../utils/manager_error.js";
 import { generateToken, getToken, verifyToken } from "../../utils/manager_jwt_token.js";
-import { comparePassword } from "../../utils/manager_password.js";
+import { comparePassword, hashPassword } from "../../utils/manager_password.js";
 import validatorRegistration from "../../validator/validator_registration.js";
 import { generateOTP, getOTPObject } from "../../utils/manager_otp.js";
 import dotenv from 'dotenv';
@@ -33,12 +33,12 @@ export const serviceAuthRegistration = async ({
             role,
         });
 
-        const otpObject = getOTPObject(user.id, "registrationUser", "");
+        const otpObject = getOTPObject(user.id, "verifyUser", "");
         const otp = await db.OTP.create(otpObject);
 
         return {
             status: "unverified",
-            otpRequestId: "registrationUser",
+            otpRequestId: "verifyUser",
             message: "Registered! Enter OTP to continue",
             recordId: otp.id,
         };
@@ -125,13 +125,24 @@ export const serviceAuthLogin = async ({
             statusCode = 200;
         } else {
 
-            const otpObject = getOTPObject(user.id, "verificationUser", "");
+            await db.OTP.update(
+                { isValid: false },
+                {
+                    where: {
+                        userId: user.id,
+                        otpRequestId: "verifyUser",
+                        isValid: true,
+                    }
+                }
+            );
+
+            const otpObject = getOTPObject(user.id, "verifyUser", "");
             const otp = await db.OTP.create(otpObject);
 
             body = {
                 status: "unverified",
                 message: "Enter OTP to get full access",
-                otpRequestId: "verificationUser",
+                otpRequestId: "verifyUser",
                 recordId: otp.id,
             };
             statusCode = 202;
@@ -201,7 +212,54 @@ export const serviceAuthRefreshToken = async (refreshToken) => {
     }
 }
 
-export const serviceAuthOTPSend = async ({
+export const serviceAuthChangePassword = async (requestBody, user) => {
+
+    try {
+        const { oldPassword, newPassword, confirmPassword } = requestBody;
+        const { id, password } = user;
+        const isOldPasswordCorrect = await comparePassword(oldPassword, password);
+        if (!isOldPasswordCorrect) {
+            generateError("Invalid request", 400);
+        }
+
+        await db.OTP.update(
+            { isValid: false },
+            {
+                where: {
+                    userId: id,
+                    otpRequestId: "resetPassword",
+                    isValid: true,
+                }
+            }
+        );
+
+        const newHashPassword = await hashPassword(newPassword);
+
+        const otpObject = getOTPObject(id, "resetPassword", newHashPassword);
+        const otp = await db.OTP.create(otpObject);
+
+        const body = {
+            status: "pendingPasswordChange",
+            message: "Enter otp to confirm changes",
+            otpRequestId: "resetPassword",
+            recordId: otp.id,
+        }
+
+        return {
+            body,
+            statusCode: 200,
+        }
+
+
+    } catch (error) {
+        // console.log("service error", error);
+        throw error;
+    }
+
+
+}
+
+export const serviceAuthOTPVerify = async ({
     recordId,
     otpRequestId,
     otpCode,
@@ -209,30 +267,40 @@ export const serviceAuthOTPSend = async ({
     try {
 
         const recordOTP = await db.OTP.findOne({ where: { id: recordId, otpRequestId } });
+        if (!recordOTP) {
+            generateError("Invalid information", 400);
+        }
         if (recordOTP.attempts >= process.env.OTP_MAX_ATTEMPTS) {
             generateError("Too many attempts", 400);
         }
-        if (recordOTP.expirationTime < new Date() || recordOTP.isUsed || recordOTP.otp !== otpCode) {
+        if (recordOTP.expirationTime < new Date() || recordOTP.isUsed || recordOTP.otp !== otpCode || !recordOTP.isValid) {
             recordOTP.attempts += 1;
             await recordOTP.save();
             generateError("Invalid OTP", 400);
         }
         else if (recordOTP.otp === otpCode) {
             recordOTP.isUsed = true;
+            recordOTP.isValid = false;
             recordOTP.attempts += 1;
             await recordOTP.save();
 
             let body;
             const user = await db.User.findOne({ where: { id: recordOTP.userId } });
-            if (otpRequestId === "verificationUser" || otpRequestId === "registrationUser") {
+            if (recordOTP.otpRequestId === otpRequestId && otpRequestId === "verifyUser") {
                 user.verified = true;
                 body = {
                     status: "success",
                     message: "User verified and have full access now",
                 }
             }
-            else if (otpRequestId === "resetPassword") {/** todo: implement reset pasword logic*/ }
-            else if (otpRequestId === "changePhone") {/** todo: implement change phone logic*/ }
+            else if (recordOTP.otpRequestId === otpRequestId && otpRequestId === "resetPassword") {
+                user.password = recordOTP.metaData;
+                body = {
+                    status: "success",
+                    message: "Password changed successfully",
+                }
+             }
+            else if (recordOTP.otpRequestId === otpRequestId && otpRequestId === "changePhone") {/** todo: implement change phone logic*/ }
             await user.save();
 
             return {
@@ -243,7 +311,7 @@ export const serviceAuthOTPSend = async ({
 
 
     } catch (error) {
-        // console.log("service error", error);
+        console.log("service error", error);
         throw error;
     }
 }

@@ -4,6 +4,7 @@ import validatorLoginUser from "../validator/validator_login.js";
 import validatorRegistration from "../validator/validator_registration.js";
 import dotenv from 'dotenv';
 import dotenvExpand from 'dotenv-expand';
+import validatorUpdatePassword from "../validator/validator_update_password.js";
 
 const myEnv = dotenv.config();
 dotenvExpand.expand(myEnv);
@@ -26,19 +27,24 @@ export const managerError = (object, key) => {
             }
         case "otp":
             {
-                const {recordId, otpRequestId, otpCode } = object;
+                const { recordId, otpRequestId, otpCode } = object;
                 if (!recordId || !otpRequestId || !otpCode) {
                     generateError("Field missing", 400);
                 }
 
                 const otpRequestIdList = [
-                    "registrationUser",
-                    "verificationUser",
+                    "verifyUser",
                     "resetPassword",
                     "changePhone",
                 ]
                 validatorItem(otpRequestId, otpRequestIdList, "Invalid request", 400);
                 validatorLength(otpCode, process.env.OTP_LENGTH);
+                break;
+            }
+        case "password":
+            {
+                const { error } = validatorUpdatePassword.validate(object);
+                currentError = error;
                 break;
             }
     }

@@ -13,6 +13,18 @@ export const generateOTP = () => {
 export const getOTPObject = (userId, otpRequestId, metaData) => {
     const otp = generateOTP();
     const expirationTime = getExpirationTime(process.env.OTP_EXPIRE);
+    // let metaData = null;
+    // console.log(data);
+    // if (otpRequestId === "resetPassword") {
+    //     metaData = {
+    //         newPassword: data,
+    //     };
+
+    // } else if (otpRequestId === "changePhone") {
+    //     metaData = {
+    //         newPhone: data,
+    //     };
+    // }
     return {
         userId,
         otp,

@@ -87,6 +87,6 @@ const hashUserPassword = async (user) => {
 };
 
 User.beforeCreate(hashUserPassword);
-User.beforeUpdate(hashUserPassword);
+// User.beforeUpdate(hashUserPassword);
 
 export default User;

@@ -1,7 +1,7 @@
 import { managerError } from "../../utils/manager_error.js";
 import validatorItem from "../../validator/validator_item.js";
 import validatorRegistration from "../../validator/validator_registration.js";
-import { serviceAuthLogin, serviceAuthOTPSend, serviceAuthRefreshToken, serviceAuthRegistration } from "./service_auth.js";
+import { serviceAuthChangePassword, serviceAuthLogin, serviceAuthOTPVerify, serviceAuthRefreshToken, serviceAuthRegistration } from "./service_auth.js";
 
 export const controllerAuthRegistration = async (req, res, next) => {
     try {
@@ -48,12 +48,24 @@ export const controllerAuthRefreshToken = async (req, res, next) => {
     }
 }
 
-export const controllerAuthOTPSend = async (req, res, next) => {
+export const controllerAuthChangePassword = async (req, res, next) => {
+    try {
+        managerError(req.body, "password");
+        const result = await serviceAuthChangePassword(req.body, req.user);
+        res.status(result.statusCode).json(result.body);
+
+    } catch (error) {
+        // console.log("controller error", error);
+        next(error);
+    }
+}
+
+export const controllerAuthOTPVerify = async (req, res, next) => {
 
     try {
 
         managerError(req.body, "otp");
-        const result = await serviceAuthOTPSend(req.body);
+        const result = await serviceAuthOTPVerify(req.body);
         res.status(result.statusCode).json(result.body);
     } catch (error) {
         // console.log("controller error", error);

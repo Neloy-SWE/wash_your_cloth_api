@@ -3,6 +3,7 @@ import { sequelize } from "../config/database.js";
 import validatorLength from "../validator/validator_length.js";
 import dotenv from 'dotenv';
 import dotenvExpand from 'dotenv-expand';
+import validatorItem from "../validator/validator_item.js";
 
 const myEnv = dotenv.config();
 dotenvExpand.expand(myEnv);
@@ -30,9 +31,23 @@ const OTP = sequelize.define("OTP", {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
     },
+    isValid: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true,
+    },
     otpRequestId: {
         type: DataTypes.STRING,
         allowNull: false,
+        validate: {
+            customValidator(value) {
+                const otpRequestIdList = [
+                    "verifyUser",
+                    "resetPassword",
+                    "changePhone",
+                ]
+                validatorItem(value, otpRequestIdList, "Invalid request ID", 400);
+            }
+        },
     },
     attempts: {
         type: DataTypes.INTEGER,
