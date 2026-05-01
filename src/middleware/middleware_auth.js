@@ -19,6 +19,7 @@ export const middlewareAuth = async (req, res, next) => {
     }
 
     req.user = user;
+    req.role = payload.role;
     next();
   }
   catch (error) {

@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 import dotenvExpand from 'dotenv-expand';
 import validatorChangePassword from "../validator/validator_change_password.js";
 import validatorChangePhone from "../validator/validator_change_phone.js";
+import validatorUpdateUser from "../validator/validator_update_user.js";
 
 const myEnv = dotenv.config();
 dotenvExpand.expand(myEnv);
@@ -51,6 +52,12 @@ export const managerError = (object, key) => {
         case "phone":
             {
                 const { error } = validatorChangePhone.validate(object);
+                currentError = error;
+                break;
+            }
+        case "updateUser":
+            {
+                const { error } = validatorUpdateUser.validate(object);
                 currentError = error;
                 break;
             }

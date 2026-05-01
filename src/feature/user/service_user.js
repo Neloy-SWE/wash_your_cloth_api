@@ -3,7 +3,7 @@ import { comparePassword, hashPassword } from "../../utils/manager_password.js";
 import db from "../../model/index_model.js";
 import { getOTPObject } from "../../utils/manager_otp.js";
 
-export const serviceProfileChangePassword = async (requestBody, user) => {
+export const serviceUserChangePassword = async (requestBody, user) => {
 
     try {
         const { oldPassword, newPassword, confirmPassword } = requestBody;
@@ -50,7 +50,7 @@ export const serviceProfileChangePassword = async (requestBody, user) => {
 
 }
 
-export const serviceProfileChangePhone = async (requestBody, user) => {
+export const serviceUserChangePhone = async (requestBody, user) => {
     try {
         const { newPhone } = requestBody;
         const { id, phone } = user;
@@ -94,7 +94,7 @@ export const serviceProfileChangePhone = async (requestBody, user) => {
 
 }
 
-export const serviceProfileView = async (user) => {
+export const serviceUserView = async (user) => {
     try {
         const { role, firstName, lastName, phone, address, longitude, latitude, verified } = user;
         let body;
@@ -109,14 +109,41 @@ export const serviceProfileView = async (user) => {
                 verified,
             }
         }
-        else if (role == "shop"){
-            body= {
+        else if (role == "shop") {
+            body = {
                 message: "under construction",
             }
         }
         return {
             body,
         }
+    } catch (error) {
+        // console.log("service error", error);
+        throw error;
+    }
+}
+
+export const serviceUserUpdateUser = async (requestBody, user) => {
+    try {
+        const { firstName, lastName, address, longitude, latitude } = requestBody;
+
+        user.firstName = firstName;
+        user.lastName = lastName;
+        user.address = address;
+        user.longitude = longitude;
+        user.latitude = latitude;
+
+        await user.save();
+
+        const body = {
+            status: "success",
+            message: "profile update successful",
+        }
+
+        return {
+            body,
+        }
+
     } catch (error) {
         // console.log("service error", error);
         throw error;

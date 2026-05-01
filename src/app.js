@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import dotenvExpand from 'dotenv-expand';
 import db from "./model/index_model.js";
 import rateLimit from "express-rate-limit";
-import routeProfile from "./feature/profile/route_profile.js";
+import routeUser from "./feature/user/route_user.js";
 
 const myEnv = dotenv.config();
 dotenvExpand.expand(myEnv);
@@ -38,7 +38,7 @@ app.get("/", (req, res) => {
 
 // Register routes
 app.use("/auth", routerAuth); // auth
-app.use("/profile", routeProfile) // profile
+app.use("/user", routeUser) // profile
 
 // Global error handling middleware
 app.use((error, req, res, next) => {
