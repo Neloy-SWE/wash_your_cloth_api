@@ -1,9 +1,10 @@
 import express from "express";
-import { authMiddleware } from "../../middleware/middleware_auth.js";
-import { controllerProfileChangePassword } from "./controller_profile.js";
+import { middlewareAuth } from "../../middleware/middleware_auth.js";
+import { controllerProfileChangePassword, controllerProfileChangePhone } from "./controller_profile.js";
 
 const routeProfile = express.Router();
 
-routeProfile.patch("/change-password", authMiddleware, controllerProfileChangePassword);
+routeProfile.patch("/change-password", middlewareAuth, controllerProfileChangePassword);
+routeProfile.patch("/change-phone", middlewareAuth, controllerProfileChangePhone);
 
 export default routeProfile;

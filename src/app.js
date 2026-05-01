@@ -42,7 +42,7 @@ app.use("/profile", routeProfile) // profile
 
 // Global error handling middleware
 app.use((error, req, res, next) => {
-    console.error("global error handler: ", error);
+    // console.error("global error handler: ", error);
     res.status(error.statusCode || 500)
         .json({ error: error.errors?.map(e => e.message) || error?.map(e => e.message) || "Internal Server Error" });
     // .json({ error: error.errors?.map(e => e.message) || "Internal Server Error" });

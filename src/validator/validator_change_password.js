@@ -1,6 +1,6 @@
 import Joi from "joi";
 
-const validatorUpdatePassword = Joi.object({
+const validatorChangePassword = Joi.object({
     oldPassword: Joi.string().required().messages(
         {
             "any.required": "Old password is required",
@@ -24,4 +24,4 @@ const validatorUpdatePassword = Joi.object({
         }),
 });
 
-export default validatorUpdatePassword;
+export default validatorChangePassword;

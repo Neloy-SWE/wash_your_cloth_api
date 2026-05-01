@@ -3,7 +3,7 @@ import db from "../model/index_model.js";
 import { generateError } from "../utils/manager_error.js";
 import { verifyToken } from "../utils/manager_jwt_token.js";
 
-export const authMiddleware = async (req, res, next) => {
+export const middlewareAuth = async (req, res, next) => {
   try {
     const errorMessage = "Invalid access request";
     const token = req.headers.authorization?.split(" ")[1];

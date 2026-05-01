@@ -1,5 +1,5 @@
 import { managerError } from "../../utils/manager_error.js";
-import { serviceProfileChangePassword } from "./service_profile.js";
+import { serviceProfileChangePassword, serviceProfileChangePhone } from "./service_profile.js";
 
 export const controllerProfileChangePassword = async (req, res, next) => {
     try {
@@ -7,6 +7,17 @@ export const controllerProfileChangePassword = async (req, res, next) => {
         const result = await serviceProfileChangePassword(req.body, req.user);
         res.status(result.statusCode).json(result.body);
 
+    } catch (error) {
+        // console.log("controller error", error);
+        next(error);
+    }
+}
+
+export const controllerProfileChangePhone = async (req, res, next) => {
+    try {
+        managerError(req.body, "phone");
+        const result = await serviceProfileChangePhone(req.body, req.user);
+        res.status(result.statusCode).json(result.body);
     } catch (error) {
         // console.log("controller error", error);
         next(error);

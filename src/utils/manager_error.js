@@ -4,7 +4,8 @@ import validatorLoginUser from "../validator/validator_login.js";
 import validatorRegistration from "../validator/validator_registration.js";
 import dotenv from 'dotenv';
 import dotenvExpand from 'dotenv-expand';
-import validatorUpdatePassword from "../validator/validator_update_password.js";
+import validatorChangePassword from "../validator/validator_change_password.js";
+import validatorChangePhone from "../validator/validator_change_phone.js";
 
 const myEnv = dotenv.config();
 dotenvExpand.expand(myEnv);
@@ -43,7 +44,13 @@ export const managerError = (object, key) => {
             }
         case "password":
             {
-                const { error } = validatorUpdatePassword.validate(object);
+                const { error } = validatorChangePassword.validate(object);
+                currentError = error;
+                break;
+            }
+        case "phone":
+            {
+                const { error } = validatorChangePhone.validate(object);
                 currentError = error;
                 break;
             }
@@ -59,8 +66,8 @@ export const generateError = (message, statusCode) => {
     const error = new Error(message);
     const userError = [error];
     userError.statusCode = statusCode;
-    console.log("generate error", userError);
-    console.log("user error status code:::", userError.statusCode);
-    console.log("parameter status code:::", statusCode);
+    // console.log("generate error", userError);
+    // console.log("user error status code:::", userError.statusCode);
+    // console.log("parameter status code:::", statusCode);
     throw userError;
 }

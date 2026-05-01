@@ -252,8 +252,14 @@ export const serviceAuthOTPVerify = async ({
                     status: "success",
                     message: "Password changed successfully",
                 }
-             }
-            else if (recordOTP.otpRequestId === otpRequestId && otpRequestId === "changePhone") {/** todo: implement change phone logic*/ }
+            }
+            else if (recordOTP.otpRequestId === otpRequestId && otpRequestId === "changePhone") {
+                user.phone = recordOTP.metaData;
+                body = {
+                    status: "success",
+                    message: "Phone changed successfully",
+                }
+            }
             await user.save();
 
             return {
@@ -264,7 +270,7 @@ export const serviceAuthOTPVerify = async ({
 
 
     } catch (error) {
-        console.log("service error", error);
+        // console.log("service error", error);
         throw error;
     }
 }

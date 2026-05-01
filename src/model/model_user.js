@@ -35,7 +35,9 @@ const User = sequelize.define("User", {
     },
     phone: {
         type: DataTypes.STRING,
-        unique: true,
+        unique: {
+            msg: "This phone number is not available"
+        },
         allowNull: false,
         validate: {
             notEmpty: true,
