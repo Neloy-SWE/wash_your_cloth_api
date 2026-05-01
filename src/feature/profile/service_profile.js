@@ -93,3 +93,32 @@ export const serviceProfileChangePhone = async (requestBody, user) => {
     }
 
 }
+
+export const serviceProfileView = async (user) => {
+    try {
+        const { role, firstName, lastName, phone, address, longitude, latitude, verified } = user;
+        let body;
+        if (role == "user") {
+            body = {
+                firstName,
+                lastName,
+                phone,
+                address,
+                longitude,
+                latitude,
+                verified,
+            }
+        }
+        else if (role == "shop"){
+            body= {
+                message: "under construction",
+            }
+        }
+        return {
+            body,
+        }
+    } catch (error) {
+        // console.log("service error", error);
+        throw error;
+    }
+}
