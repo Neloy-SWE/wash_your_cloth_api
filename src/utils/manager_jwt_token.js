@@ -27,12 +27,12 @@ export const getToken = (payload) => {
     return { token, expirationToken }
 };
 
-export const verifyToken = (token, errorMessage = "Invalid token") => {
+export const verifyToken = (token, errorMessage = "Invalid token", statusCode = 400) => {
     try {
         const payload = jwt.verify(token, process.env.JWT_SECRET);
         // console.log("payload", payload);
         return payload;
     } catch (error) {
-        generateError(errorMessage, 400);
+        generateError(errorMessage, statusCode);
     }
 };

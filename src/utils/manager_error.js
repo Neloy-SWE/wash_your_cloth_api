@@ -59,6 +59,8 @@ export const generateError = (message, statusCode) => {
     const error = new Error(message);
     const userError = [error];
     userError.statusCode = statusCode;
-    // console.log("generate error", userError);
+    console.log("generate error", userError);
+    console.log("user error status code:::", userError.statusCode);
+    console.log("parameter status code:::", statusCode);
     throw userError;
 }

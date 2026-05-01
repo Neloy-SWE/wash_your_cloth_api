@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import dotenvExpand from 'dotenv-expand';
 import db from "./model/index_model.js";
 import rateLimit from "express-rate-limit";
+import routeProfile from "./feature/profile/route_profile.js";
 
 const myEnv = dotenv.config();
 dotenvExpand.expand(myEnv);
@@ -36,11 +37,12 @@ app.get("/", (req, res) => {
 });
 
 // Register routes
-app.use("/auth", routerAuth);
+app.use("/auth", routerAuth); // auth
+app.use("/profile", routeProfile) // profile
 
 // Global error handling middleware
 app.use((error, req, res, next) => {
-    // console.error("global error handler: ", error);
+    console.error("global error handler: ", error);
     res.status(error.statusCode || 500)
         .json({ error: error.errors?.map(e => e.message) || error?.map(e => e.message) || "Internal Server Error" });
     // .json({ error: error.errors?.map(e => e.message) || "Internal Server Error" });

@@ -11,7 +11,7 @@ export const authMiddleware = async (req, res, next) => {
       generateError(errorMessage, 401);
     }
 
-    const payload = verifyToken(token, errorMessage);
+    const payload = verifyToken(token, errorMessage, 401);
 
     const user = await db.User.findByPk(payload.id);
     if (!user) {
