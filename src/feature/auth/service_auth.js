@@ -103,7 +103,7 @@ export const serviceAuthLogin = async ({
                 };
             }
             else {
-                let { token, refreshToken, expirationToken, expirationRefreshToken } = generateToken(payload);
+                const { token, refreshToken, expirationToken, expirationRefreshToken } = generateToken(payload);
 
                 await db.Token.create({
                     // token,

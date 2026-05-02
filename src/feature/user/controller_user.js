@@ -44,3 +44,7 @@ export const controllerUserUpdateUser = async (req, res, next) => {
         next(error);
     }
 }
+
+export const controllerUserDelete = async (req, res, next) => {
+    
+}

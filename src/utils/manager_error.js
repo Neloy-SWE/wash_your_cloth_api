@@ -7,11 +7,17 @@ import dotenvExpand from 'dotenv-expand';
 import validatorChangePassword from "../validator/validator_change_password.js";
 import validatorChangePhone from "../validator/validator_change_phone.js";
 import validatorUpdateUser from "../validator/validator_update_user.js";
+import validatorShop from "../validator/validator_shop.js";
 
 const myEnv = dotenv.config();
 dotenvExpand.expand(myEnv);
 
 export const managerError = (object, key) => {
+
+    if (!object){
+        generateError("Please provide information", 400);
+    }
+
     let currentError;
     switch (key) {
         case "registration":
@@ -20,7 +26,6 @@ export const managerError = (object, key) => {
                 currentError = error;
                 break;
             }
-
         case "login":
             {
                 const { error } = validatorLoginUser.validate(object);
@@ -61,6 +66,12 @@ export const managerError = (object, key) => {
                 currentError = error;
                 break;
             }
+        case "shop":
+            {
+                const { error } = validatorShop.validate(object);
+                currentError = error;
+                break;
+            }
     }
     if (currentError) {
         const userError = currentError.details;
@@ -73,8 +84,8 @@ export const generateError = (message, statusCode) => {
     const error = new Error(message);
     const userError = [error];
     userError.statusCode = statusCode;
-    // console.log("generate error", userError);
-    // console.log("user error status code:::", userError.statusCode);
-    // console.log("parameter status code:::", statusCode);
+    console.log("generate error", userError);
+    console.log("user error status code:::", userError.statusCode);
+    console.log("parameter status code:::", statusCode);
     throw userError;
 }

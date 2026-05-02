@@ -5,6 +5,7 @@ import dotenvExpand from 'dotenv-expand';
 import db from "./model/index_model.js";
 import rateLimit from "express-rate-limit";
 import routeUser from "./feature/user/route_user.js";
+import routerShop from "./feature/shop/route_shop.js";
 
 const myEnv = dotenv.config();
 dotenvExpand.expand(myEnv);
@@ -39,6 +40,7 @@ app.get("/", (req, res) => {
 // Register routes
 app.use("/auth", routerAuth); // auth
 app.use("/user", routeUser) // profile
+app.use("/shop", routerShop) // shop
 
 // Global error handling middleware
 app.use((error, req, res, next) => {
