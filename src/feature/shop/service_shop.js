@@ -34,6 +34,30 @@ import { generateError } from "../../utils/manager_error.js";
 
 export const serviceShopView = async (user) => {
     try {
+        const { id, firstName, lastName, phone, address, longitude, latitude } = user;
+
+        const shop = await db.Shop.findOne({
+            where: { userId: id, },
+        });
+        const {shopName, openTime, closeTime, weekends, status } = shop;
+
+        const body = {
+            shopName,
+            ownerFirstName: firstName,
+            ownerLastName: lastName,
+            shopPhone: phone,
+            shopAddress: address,
+            longitude,
+            latitude,
+            openTime,
+            closeTime,
+            weekends,
+            status,
+        }
+
+        return {
+            body,
+        }
 
     } catch (error) {
         // console.log("service error", error);

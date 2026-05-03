@@ -15,6 +15,7 @@ import { serviceShopView } from "./service_shop.js";
 export const controllerShopView = async (req, res, next) => {
     try {
         const result = await serviceShopView(req.user);
+        res.status(200).json(result.body);
     } catch (error) {
         // console.log("controller error", error);
         next(error);
