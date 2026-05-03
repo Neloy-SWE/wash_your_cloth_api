@@ -130,7 +130,7 @@ export const serviceUserUpdateUser = async (requestBody, user) => {
 
         const body = {
             status: "success",
-            message: "profile update successful",
+            message: "User profile update successful",
         }
 
         return {

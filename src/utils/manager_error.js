@@ -8,13 +8,14 @@ import validatorChangePassword from "../validator/validator_change_password.js";
 import validatorChangePhone from "../validator/validator_change_phone.js";
 import validatorUpdateUser from "../validator/validator_update_user.js";
 import validatorRegistrationShop from "../validator/validator_registration_shop.js";
+import validatorUpdateShop from "../validator/validator_update_shop.js";
 
 const myEnv = dotenv.config();
 dotenvExpand.expand(myEnv);
 
 export const managerError = (object, key) => {
 
-    if (!object){
+    if (!object) {
         generateError("Please provide information", 400);
     }
 
@@ -69,6 +70,12 @@ export const managerError = (object, key) => {
         case "registrationShop":
             {
                 const { error } = validatorRegistrationShop.validate(object);
+                currentError = error;
+                break;
+            }
+        case "updateShop":
+            {
+                const { error } = validatorUpdateShop.validate(object);
                 currentError = error;
                 break;
             }

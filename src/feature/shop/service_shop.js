@@ -1,5 +1,6 @@
 import db from "../../model/index_model.js";
 import { generateError } from "../../utils/manager_error.js";
+import { DateTime } from "luxon";
 
 // export const serviceShopOpen = async (requestBody, user) => {
 //     try {
@@ -39,7 +40,7 @@ export const serviceShopView = async (user) => {
         const shop = await db.Shop.findOne({
             where: { userId: id, },
         });
-        const {shopName, openTime, closeTime, weekends, status } = shop;
+        const { shopName, openTime, closeTime, weekends, status } = shop;
 
         const body = {
             shopName,
@@ -49,10 +50,53 @@ export const serviceShopView = async (user) => {
             shopAddress: address,
             longitude,
             latitude,
-            openTime,
-            closeTime,
+            openTime: DateTime.fromFormat(openTime, "HH:mm:ss").toFormat("hh:mm a"),
+            closeTime: DateTime.fromFormat(closeTime, "HH:mm:ss").toFormat("hh:mm a"),
             weekends,
             status,
+        }
+
+        return {
+            body,
+        }
+
+    } catch (error) {
+        // console.log("service error", error);
+        throw error;
+    }
+}
+
+export const serviceShopUpdate = async (requestBody, user) => {
+    try {
+        const { id } = user;
+        const { ownerFirstName, ownerLastName, shopAddress, longitude, latitude, shopName, openTime, closeTime, weekends } = requestBody;
+        await db.sequelize.transaction(async (t) => {
+
+            await db.User.update(
+                {
+                    firstName: ownerFirstName,
+                    lastName: ownerLastName,
+                    address: shopAddress,
+                    longitude: longitude,
+                    latitude: latitude
+                },
+                { where: { id }, transaction: t }
+            );
+
+            await db.Shop.update(
+                {
+                    shopName: shopName,
+                    openTime: openTime,
+                    closeTime: closeTime,
+                    weekends: weekends
+                },
+                { where: { userId: id }, transaction: t }
+            );
+
+        });
+        const body = {
+            status: "success",
+            message: "Shop profile update successful",
         }
 
         return {
