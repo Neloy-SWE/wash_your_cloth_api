@@ -1,12 +1,20 @@
-import { managerError } from "../../utils/manager_error.js";
+import { generateError, managerError } from "../../utils/manager_error.js";
 import validatorItem from "../../validator/validator_item.js";
-import validatorRegistration from "../../validator/validator_registration.js";
+import validatorRegistrationUser from "../../validator/validator_registration_user.js";
 import { serviceAuthLogin, serviceAuthOTPVerify, serviceAuthRefreshToken, serviceAuthRegistration } from "./service_auth.js";
 
 export const controllerAuthRegistration = async (req, res, next) => {
     try {
-
-        managerError(req.body, "registration");
+        const { role } = req.body;
+        if (role === "user") {
+            managerError(req.body, "registrationUser");
+        }
+        else if (role === "shop") {
+            managerError(req.body, "registrationShop");
+        }
+        else {
+            generateError("Add a valid role", 400);
+        }
 
         const result = await serviceAuthRegistration(req.body);
         res.status(201).json(result);

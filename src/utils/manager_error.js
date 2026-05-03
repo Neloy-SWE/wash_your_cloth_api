@@ -1,13 +1,13 @@
 import validatorItem from "../validator/validator_item.js";
 import validatorLength from "../validator/validator_length.js";
 import validatorLoginUser from "../validator/validator_login.js";
-import validatorRegistration from "../validator/validator_registration.js";
+import validatorRegistrationUser from "../validator/validator_registration_user.js";
 import dotenv from 'dotenv';
 import dotenvExpand from 'dotenv-expand';
 import validatorChangePassword from "../validator/validator_change_password.js";
 import validatorChangePhone from "../validator/validator_change_phone.js";
 import validatorUpdateUser from "../validator/validator_update_user.js";
-import validatorShop from "../validator/validator_shop.js";
+import validatorRegistrationShop from "../validator/validator_registration_shop.js";
 
 const myEnv = dotenv.config();
 dotenvExpand.expand(myEnv);
@@ -20,9 +20,9 @@ export const managerError = (object, key) => {
 
     let currentError;
     switch (key) {
-        case "registration":
+        case "registrationUser":
             {
-                const { error } = validatorRegistration.validate(object);
+                const { error } = validatorRegistrationUser.validate(object);
                 currentError = error;
                 break;
             }
@@ -66,9 +66,9 @@ export const managerError = (object, key) => {
                 currentError = error;
                 break;
             }
-        case "shop":
+        case "registrationShop":
             {
-                const { error } = validatorShop.validate(object);
+                const { error } = validatorRegistrationShop.validate(object);
                 currentError = error;
                 break;
             }
@@ -84,8 +84,8 @@ export const generateError = (message, statusCode) => {
     const error = new Error(message);
     const userError = [error];
     userError.statusCode = statusCode;
-    console.log("generate error", userError);
-    console.log("user error status code:::", userError.statusCode);
-    console.log("parameter status code:::", statusCode);
+    // console.log("generate error", userError);
+    // console.log("user error status code:::", userError.statusCode);
+    // console.log("parameter status code:::", statusCode);
     throw userError;
 }

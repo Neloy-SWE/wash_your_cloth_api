@@ -1,7 +1,7 @@
 import Joi from "joi";
 
 
-const validatorRegistration = Joi.object({
+const validatorRegistrationUser = Joi.object({
     firstName: Joi.string().min(2).max(200).required().messages({
         "any.required": "First name is required",
         "string.empty": "First name cannot be empty",
@@ -40,4 +40,4 @@ const validatorRegistration = Joi.object({
     }),
 });
 
-export default validatorRegistration;
+export default validatorRegistrationUser;

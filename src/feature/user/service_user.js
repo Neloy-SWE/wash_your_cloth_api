@@ -97,23 +97,16 @@ export const serviceUserChangePhone = async (requestBody, user) => {
 export const serviceUserView = async (user) => {
     try {
         const { role, firstName, lastName, phone, address, longitude, latitude, verified } = user;
-        let body;
-        if (role == "user") {
-            body = {
-                firstName,
-                lastName,
-                phone,
-                address,
-                longitude,
-                latitude,
-                verified,
-            }
+        const body = {
+            firstName,
+            lastName,
+            phone,
+            address,
+            longitude,
+            latitude,
+            verified,
         }
-        else if (role == "shop") {
-            body = {
-                message: "under construction",
-            }
-        }
+
         return {
             body,
         }

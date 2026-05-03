@@ -3,7 +3,6 @@ import db from "../../model/index_model.js";
 import { generateError } from "../../utils/manager_error.js";
 import { generateToken, getToken, verifyToken } from "../../utils/manager_jwt_token.js";
 import { comparePassword, hashPassword } from "../../utils/manager_password.js";
-import validatorRegistration from "../../validator/validator_registration.js";
 import { generateOTP, getOTPObject } from "../../utils/manager_otp.js";
 import dotenv from 'dotenv';
 import dotenvExpand from 'dotenv-expand';
@@ -11,30 +10,78 @@ import dotenvExpand from 'dotenv-expand';
 const myEnv = dotenv.config();
 dotenvExpand.expand(myEnv);
 
-export const serviceAuthRegistration = async ({
-    firstName,
-    lastName,
-    address,
-    phone,
-    longitude,
-    latitude,
-    password,
-    role,
-}) => {
+export const serviceAuthRegistration = async (requestBody) => {
+    const t = await db.sequelize.transaction();
     try {
-        const user = await db.User.create({
-            firstName,
-            lastName,
-            address,
-            phone,
-            longitude,
-            latitude,
-            password,
-            role,
+
+        const { role, phone } = requestBody;
+
+        const existingUser = await db.User.findOne({
+            where: { phone },
         });
+        if (existingUser) {
+            generateError("This phone number is not available", 400);
+        }
+
+        let user;
+
+        if (role === "user") {
+            const { firstName, lastName, address, longitude, latitude, password } = requestBody;
+            user = await db.User.create({
+                firstName,
+                lastName,
+                address,
+                phone,
+                longitude,
+                latitude,
+                password,
+                role,
+            },
+                {
+                    transaction: t,
+                }
+            );
+        } else if (role === "shop") {
+            const { ownerFirstName, ownerLastName, shopAddress, longitude, latitude, password, shopName, openTime, closeTime, weekends } = requestBody;
+            user = await db.User.create({
+                firstName: ownerFirstName,
+                lastName: ownerLastName,
+                address: shopAddress,
+                phone,
+                longitude,
+                latitude,
+                password,
+                role,
+            },
+                {
+                    transaction: t,
+                }
+            );
+
+            await db.Shop.create({
+                shopName,
+                openTime,
+                closeTime,
+                weekends,
+                isActive: true,
+                userId: user.id,
+            },
+                {
+                    transaction: t,
+                }
+            );
+        }
+
+
 
         const otpObject = getOTPObject(user.id, "verifyUser", "");
-        const otp = await db.OTP.create(otpObject);
+        const otp = await db.OTP.create(otpObject,
+            {
+                transaction: t,
+            }
+        );
+
+        await t.commit();
 
         return {
             status: "unverified",
@@ -44,6 +91,7 @@ export const serviceAuthRegistration = async ({
         };
 
     } catch (error) {
+        await t.rollback();
         // console.log("service error", error);
         throw error;
     }
