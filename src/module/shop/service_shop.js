@@ -116,7 +116,7 @@ export const serviceShopList = async () => {
             attributes: [
                 "id",
                 "shopName",
-                "isActive",
+                "status",
                 [col("User.address"), "shopAddress"],
             ],
             include: [
@@ -137,6 +137,48 @@ export const serviceShopList = async () => {
 
         return shopList;
 
+    } catch (error) {
+        // console.log("service error", error);
+        throw error;
+    }
+}
+
+export const serviceShopDetails = async (shopId) => {
+    try {
+        const shopDetails = await db.Shop.findOne(
+            {
+                where: { id: shopId },
+                attributes: [
+                    "id",
+                    "shopName",
+                    [col("User.firstName"), "ownerFirstName"],
+                    [col("User.lastName"), "ownerLastName"],
+                    [col("User.phone"), "phone"],
+                    [col("User.address"), "shopAddress"],
+                    [col("User.longitude"), "longitude"],
+                    [col("User.latitude"), "latitude"],
+                    "openTime",
+                    "closeTime",
+                    "weekends",
+                    "status",
+                ],
+                include: [
+                    {
+                        model: db.User,
+                        attributes: [],
+                    },
+                ],
+                raw: true,
+            }
+        );
+        if (!shopDetails) {
+            generateError("No shop found", 400);
+        }
+
+        shopDetails.openTime = DateTime.fromFormat(shopDetails.openTime, "HH:mm:ss").toFormat("hh:mm a");
+        shopDetails.closeTime = DateTime.fromFormat(shopDetails.closeTime, "HH:mm:ss").toFormat("hh:mm a");
+
+        return shopDetails;
     } catch (error) {
         // console.log("service error", error);
         throw error;

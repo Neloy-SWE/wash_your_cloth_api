@@ -1,5 +1,5 @@
 import { managerError } from "../../utils/manager_error.js";
-import { serviceShopList, serviceShopUpdate, serviceShopView } from "./service_shop.js";
+import { serviceShopDetails, serviceShopList, serviceShopUpdate, serviceShopView } from "./service_shop.js";
 
 // export const controllerShopOpen = async (req, res, next) => {
 //     try {
@@ -36,6 +36,17 @@ export const controllerShopUpdate = async (req, res, next) => {
 export const controllerShopList = async (req, res, next) => {
     try {
         const result = await serviceShopList();
+        res.status(200).json(result);
+    } catch (error) {
+        // console.log("controller error", error);
+        next(error);
+    }
+}
+
+export const controllerShopDetails = async (req, res, next) => {
+    try {
+        managerError(req.params.shopId, "id");
+        const result = await serviceShopDetails(req.params.shopId);
         res.status(200).json(result);
     } catch (error) {
         // console.log("controller error", error);
