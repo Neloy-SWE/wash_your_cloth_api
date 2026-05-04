@@ -1,11 +1,11 @@
 import express from "express";
-import routerAuth from "./feature/auth/route_auth.js";
+import routerAuth from "./module/auth/route_auth.js";
 import dotenv from 'dotenv';
 import dotenvExpand from 'dotenv-expand';
 import db from "./model/index_model.js";
 import rateLimit from "express-rate-limit";
-import routeUser from "./feature/user/route_user.js";
-import routerShop from "./feature/shop/route_shop.js";
+import routeUser from "./module/user/route_user.js";
+import routerShop from "./module/shop/route_shop.js";
 
 const myEnv = dotenv.config();
 dotenvExpand.expand(myEnv);

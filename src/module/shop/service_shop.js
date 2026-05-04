@@ -1,3 +1,4 @@
+import { col } from "sequelize";
 import db from "../../model/index_model.js";
 import { generateError } from "../../utils/manager_error.js";
 import { DateTime } from "luxon";
@@ -102,6 +103,39 @@ export const serviceShopUpdate = async (requestBody, user) => {
         return {
             body,
         }
+
+    } catch (error) {
+        // console.log("service error", error);
+        throw error;
+    }
+}
+
+export const serviceShopList = async () => {
+    try {
+        const shopList = await db.Shop.findAll({
+            attributes: [
+                "id",
+                "shopName",
+                "isActive",
+                [col("User.address"), "shopAddress"],
+            ],
+            include: [
+                {
+                    model: db.User,
+                    attributes: [],
+                },
+            ],
+            raw: true,
+        });
+
+        /**
+         * here, raw is responsible for showing nested data in different styles.
+         * if pass false, it will create nested json for User.
+         * if pass true, it will show User data in main json like User.id, User.name...
+         * 
+         */
+
+        return shopList;
 
     } catch (error) {
         // console.log("service error", error);
