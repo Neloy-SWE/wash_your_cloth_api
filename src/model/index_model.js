@@ -3,6 +3,7 @@ import User from "./model_user.js";
 import Token from "./model_token.js";
 import OTP from "./model_otp.js";
 import Shop from "./model_shop.js";
+import Service from "./model_service.js";
 
 User.hasMany(Token, { foreignKey: "userId" });
 Token.belongsTo(User, { foreignKey: "userId" });
@@ -19,6 +20,7 @@ const db = {
     Token,
     OTP,
     Shop,
+    Service,
 }
 
 export default db;
