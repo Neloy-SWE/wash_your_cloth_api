@@ -4,6 +4,7 @@ import Token from "./model_token.js";
 import OTP from "./model_otp.js";
 import Shop from "./model_shop.js";
 import Service from "./model_service.js";
+import Item from "./model_item.js";
 
 User.hasMany(Token, { foreignKey: "userId" });
 Token.belongsTo(User, { foreignKey: "userId" });
@@ -14,6 +15,9 @@ OTP.belongsTo(User, { foreignKey: "userId" });
 User.hasOne(Shop, { foreignKey: "userId" });
 Shop.belongsTo(User, { foreignKey: "userId" });
 
+User.hasMany(Item, { foreignKey: "userId" });
+Item.belongsTo(User, { foreignKey: "userId" });
+
 const db = {
     sequelize,
     User,
@@ -21,6 +25,7 @@ const db = {
     OTP,
     Shop,
     Service,
+    Item,
 }
 
 export default db;

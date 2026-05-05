@@ -9,3 +9,4 @@ export const controllerResourceServiceList = async (req, res, next) => {
         next(error);
     }
 }
+
