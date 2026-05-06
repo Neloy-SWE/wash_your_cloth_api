@@ -31,3 +31,15 @@ export const serviceResourceItemAdd = async (requestBody, user) => {
         throw error;
     }
 }
+
+export const serviceResourceItemList = async () => {
+    try {
+        const itemList = await db.Item.findAll();
+
+        return itemList;
+
+    } catch (error) {
+        // console.log("service error", error);
+        throw error;
+    }
+}

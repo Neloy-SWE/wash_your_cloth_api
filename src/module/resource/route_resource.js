@@ -7,5 +7,6 @@ const routerResource = express.Router();
 
 routerResource.get("/service-list", middlewareAuth, middleware_role("shop"), controllerResourceServiceList);
 routerResource.post("/item-add", middlewareAuth, middleware_role("shop"), controllerResourceItemAdd);
+routerResource.get("/item-list", middlewareAuth, middleware_role("shop"), controllerResourceItemList);
 
 export default routerResource;
