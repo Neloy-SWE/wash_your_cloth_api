@@ -1,6 +1,6 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../config/database.js";
-import validatorItem from "../validator/validator_item.js";
+import validatorEntry from "../validator/validator_entry.js";
 import { hashPassword } from "../utils/manager_password.js";
 
 const User = sequelize.define("User", {
@@ -66,7 +66,7 @@ const User = sequelize.define("User", {
         validate: {
             customValidator(value) {
                 const validListRole = ["user", "shop"];
-                validatorItem(value, validListRole, "Invalid role", 400);
+                validatorEntry(value, validListRole, "Invalid role", 400);
             }
         },
     }

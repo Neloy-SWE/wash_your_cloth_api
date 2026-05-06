@@ -1,4 +1,4 @@
-import validatorItem from "../validator/validator_item.js";
+import validatorEntry from "../validator/validator_entry.js";
 import validatorLength from "../validator/validator_length.js";
 import validatorLoginUser from "../validator/validator_login.js";
 import validatorRegistrationUser from "../validator/validator_registration_user.js";
@@ -46,7 +46,7 @@ export const managerError = (object, key) => {
                     "resetPassword",
                     "changePhone",
                 ]
-                validatorItem(otpRequestId, otpRequestIdList, "Invalid request", 400);
+                validatorEntry(otpRequestId, otpRequestIdList, "Invalid request", 400);
                 validatorLength(otpCode, process.env.OTP_LENGTH);
                 break;
             }
