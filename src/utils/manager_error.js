@@ -10,6 +10,7 @@ import validatorUpdateUser from "../validator/validator_update_user.js";
 import validatorRegistrationShop from "../validator/validator_registration_shop.js";
 import validatorUpdateShop from "../validator/validator_update_shop.js";
 import { validate, version } from "uuid";
+import validatorItem from "../validator/validator_item.js";
 
 const myEnv = dotenv.config();
 dotenvExpand.expand(myEnv);
@@ -83,9 +84,15 @@ export const managerError = (object, key) => {
         case "id":
             {
                 // if (isValidUUID)
-                if(!validate(object) || version(object) !== 4){
+                if (!validate(object) || version(object) !== 4) {
                     generateError("Invalid id", 400);
                 }
+            }
+        case "item":
+            {
+                const { error } = validatorItem.validate(object);
+                currentError = error;
+                break;
             }
     }
     if (currentError) {

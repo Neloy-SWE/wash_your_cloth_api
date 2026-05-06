@@ -11,3 +11,23 @@ export const serviceResourceServiceList = async () => {
         throw error;
     }
 }
+
+export const serviceResourceItemAdd = async (requestBody, user) => {
+    try {
+        const { itemName } = requestBody;
+        const { id } = user;
+        const item = await db.Item.create({
+            name: itemName,
+            userId: id,
+        });
+
+        return {
+            status: "success",
+            message: "Item added",
+        }
+
+    } catch (error) {
+        // console.log("service error", error);
+        throw error;
+    }
+}

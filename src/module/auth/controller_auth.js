@@ -1,5 +1,4 @@
 import { generateError, managerError } from "../../utils/manager_error.js";
-import validatorItem from "../../validator/validator_item.js";
 import validatorRegistrationUser from "../../validator/validator_registration_user.js";
 import { serviceAuthLogin, serviceAuthOTPVerify, serviceAuthRefreshToken, serviceAuthRegistration } from "./service_auth.js";
 
