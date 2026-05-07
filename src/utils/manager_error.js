@@ -87,6 +87,7 @@ export const managerError = (object, key) => {
                 if (!validate(object) || version(object) !== 4) {
                     generateError("Invalid id", 400);
                 }
+                break;
             }
         case "item":
             {

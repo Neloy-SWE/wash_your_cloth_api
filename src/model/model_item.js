@@ -17,6 +17,11 @@ const Item = sequelize.define("Item", {
             }
         }
     },
+    isActive: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true,
+        allowNull: false,
+    }
 },
     {
         timestamps: true,
