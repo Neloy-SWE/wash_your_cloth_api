@@ -23,9 +23,10 @@ export const controllerResourceItemAdd = async (req, res, next) => {
     }
 }
 
+// todo: send user id to service
 export const controllerResourceItemList = async (req, res, next) => {
     try {
-        const result = await serviceResourceItemList();
+        const result = await serviceResourceItemList(req.user.id);
         res.status(200).json(result);
 
     } catch (error) {

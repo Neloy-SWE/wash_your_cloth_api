@@ -33,9 +33,18 @@ export const serviceResourceItemAdd = async (requestBody, user) => {
     }
 }
 
-export const serviceResourceItemList = async () => {
+export const serviceResourceItemList = async (userId) => {
     try {
-        const itemList = await db.Item.findAll();
+        const itemList = await db.Item.findAll({
+            where: {
+                userId
+            },
+            attributes: [
+                "id",
+                "name",
+                "isActive",
+            ]
+        });
 
         return itemList;
 
