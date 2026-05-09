@@ -25,6 +25,22 @@ const validatorPrice = Joi.object({
             "number.positive": "Price must be a positive value",
             "any.required": "Price is required",
         }),
+    discountPrice: Joi.number()
+        .min(0)
+        .required()
+        .messages({
+            "number.base": "Discount price must be a number",
+            "number.min": "Iron press price cannot be negative",
+            "any.required": "Discount price is required",
+        }),
+    conveyancePrice: Joi.number()
+        .positive()
+        .required()
+        .messages({
+            "number.base": "Conveyance price must be a number",
+            "number.positive": "Conveyance price must be a positive value",
+            "any.required": "Conveyance price is required",
+        }),
     ironPressPrice: Joi.number()
         .min(0)
         .required()

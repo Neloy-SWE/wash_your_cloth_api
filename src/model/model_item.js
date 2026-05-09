@@ -26,6 +26,6 @@ const Item = sequelize.define("Item", {
     {
         timestamps: true,
     }
-)
+);
 
 export default Item;

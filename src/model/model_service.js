@@ -21,6 +21,6 @@ const Service = sequelize.define("Service", {
     {
         timestamps: true,
     }
-)
+);
 
 export default Service;

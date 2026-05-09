@@ -15,6 +15,14 @@ const Price = sequelize.define("Price", {
         type: DataTypes.DOUBLE,
         allowNull: false,
     },
+    discountPrice: {
+        type: DataTypes.DOUBLE,
+        allowNull: false,
+    },
+    conveyancePrice: {
+        type: DataTypes.DOUBLE,
+        allowNull: false,
+    },
     isActive: {
         type: DataTypes.BOOLEAN,
         defaultValue: true,
@@ -24,6 +32,6 @@ const Price = sequelize.define("Price", {
     {
         timestamps: true,
     }
-)
+);
 
 export default Price;
