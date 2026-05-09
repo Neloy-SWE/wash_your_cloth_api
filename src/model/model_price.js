@@ -15,6 +15,11 @@ const Price = sequelize.define("Price", {
         type: DataTypes.DOUBLE,
         allowNull: false,
     },
+    isActive: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true,
+        allowNull: false,
+    },
 },
     {
         timestamps: true,
