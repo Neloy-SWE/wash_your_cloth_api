@@ -120,15 +120,30 @@ export const serviceResourcePriceAdd = async (requestBody, userId) => {
     }
 }
 
-export const serviceResourcePriceListShop = async (id) => {
+export const serviceResourcePriceList = async (id, role) => {
     try {
-        const priceList = await db.Price.findAll({
-            attributes: [
+
+        let queryAttributes;
+
+        if (role === "shop") {
+            queryAttributes = [
+                "id",
                 [col("Service.name"), "serviceName"],
                 [col("Item.name"), "itemName"],
                 "price",
                 "ironPressPrice",
-            ],
+            ];
+        } else {
+            queryAttributes = [
+                [col("Service.name"), "serviceName"],
+                [col("Item.name"), "itemName"],
+                "price",
+                "ironPressPrice",
+            ];
+        }
+
+        const priceList = await db.Price.findAll({
+            attributes: queryAttributes,
             include: [
                 {
                     model: db.Item,
