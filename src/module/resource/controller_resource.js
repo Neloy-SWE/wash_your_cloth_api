@@ -1,5 +1,5 @@
 import { managerError } from "../../utils/manager_error.js";
-import { serviceResourceActivation, serviceResourceItemAdd, serviceResourceItemList, serviceResourceServiceList } from "./service_resource.js";
+import { serviceResourceActivation, serviceResourceItemAdd, serviceResourceItemList, serviceResourcePriceAdd, serviceResourceServiceList } from "./service_resource.js";
 
 export const controllerResourceServiceList = async (req, res, next) => {
     try {
@@ -23,7 +23,6 @@ export const controllerResourceItemAdd = async (req, res, next) => {
     }
 }
 
-// todo: send user id to service
 export const controllerResourceItemList = async (req, res, next) => {
     try {
         const result = await serviceResourceItemList(req.user.id);
@@ -40,6 +39,18 @@ export const controllerResourceItemActivation = async (req, res, next) => {
         managerError(req.params.itemId, "id");
         const result = await serviceResourceActivation(req.params.itemId);
         res.status(200).json(result);
+
+    } catch (error) {
+        // console.log("controller error", error);
+        next(error);
+    }
+}
+
+export const controllerResourcePriceAdd = async (req, res, next) => {
+    try {
+        managerError(req.body, "price");
+        const result = await serviceResourcePriceAdd(req.body);
+        res.status(201).json(result);
 
     } catch (error) {
         // console.log("controller error", error);

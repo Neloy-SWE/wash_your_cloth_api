@@ -17,6 +17,19 @@ export const serviceResourceItemAdd = async (requestBody, user) => {
     try {
         const { itemName } = requestBody;
         const { id } = user;
+        const existingItem = await db.Item.findOne(
+            {
+                where: {
+                    name: itemName,
+                    userId: id,
+                }
+            }
+        );
+
+        if (existingItem) {
+            generateError("Item already exist", 400);
+        }
+
         const item = await db.Item.create({
             name: itemName,
             userId: id,
@@ -69,6 +82,37 @@ export const serviceResourceActivation = async (id) => {
             message: "Item status updated",
         };
 
+    } catch (error) {
+        console.log("service error", error);
+        throw error;
+    }
+}
+
+export const serviceResourcePriceAdd = async (requestBody, userId) => {
+    try {
+        const { itemId } = requestBody;
+        const checkItem = await db.Item.findOne({
+            where: {
+                id: itemId,
+            },
+        });
+
+        if (checkItem.userId !== userId) {
+            generateError("Invalid item", 400);
+        }
+
+        const existingPrice = await db.Price.findOne({
+            where: requestBody,
+        });
+
+        if (existingPrice) {
+            generateError("Price already exist", 400);
+        }
+        const price = await db.Price.create(requestBody);
+        return {
+            status: "success",
+            message: "Price added",
+        }
     } catch (error) {
         console.log("service error", error);
         throw error;
