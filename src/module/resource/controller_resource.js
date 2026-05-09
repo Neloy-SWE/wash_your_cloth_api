@@ -1,5 +1,5 @@
 import { managerError } from "../../utils/manager_error.js";
-import { serviceResourceActivation, serviceResourceItemAdd, serviceResourceItemList, serviceResourcePriceAdd, serviceResourcePriceList, serviceResourceServiceList } from "./service_resource.js";
+import { serviceResourceItemActivation, serviceResourceItemAdd, serviceResourceItemList, serviceResourcePriceActivation, serviceResourcePriceAdd, serviceResourcePriceList, serviceResourceServiceList } from "./service_resource.js";
 
 export const controllerResourceServiceList = async (req, res, next) => {
     try {
@@ -37,7 +37,7 @@ export const controllerResourceItemList = async (req, res, next) => {
 export const controllerResourceItemActivation = async (req, res, next) => {
     try {
         managerError(req.params.itemId, "id");
-        const result = await serviceResourceActivation(req.params.itemId);
+        const result = await serviceResourceItemActivation(req.params.itemId);
         res.status(200).json(result);
 
     } catch (error) {
@@ -72,6 +72,17 @@ export const controllerResourcePriceListUser = async (req, res, next) => {
     try {
         managerError(req.params.shopId, "id");
         const result = await serviceResourcePriceList(req.params.shopId, req.role);
+        res.status(200).json(result);
+    } catch (error) {
+        // console.log("controller error", error);
+        next(error);
+    }
+}
+
+export const controllerResourcePriceActivation = async (req, res, next) => {
+    try {
+        managerError(req.params.priceId, "id");
+        const result = await serviceResourcePriceActivation(req.params.priceId);
         res.status(200).json(result);
     } catch (error) {
         // console.log("controller error", error);

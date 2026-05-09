@@ -68,7 +68,7 @@ export const serviceResourceItemList = async (userId) => {
     }
 }
 
-export const serviceResourceActivation = async (id) => {
+export const serviceResourceItemActivation = async (id) => {
     try {
         const item = await db.Item.findByPk(id);
 
@@ -177,6 +177,27 @@ export const serviceResourcePriceList = async (id, role) => {
             ]
         });
         return priceList;
+    } catch (error) {
+        // console.log("service error", error);
+        throw error;
+    }
+}
+
+export const serviceResourcePriceActivation = async (id) => {
+    try {
+        const price = await db.Price.findByPk(id);
+
+        if (!price) {
+            generateError("Invalid price", 400);
+        }
+
+        const updatePrice = await price.update({ isActive: !price.isActive });
+
+        return {
+            status: "success",
+            message: "Price status updated",
+        };
+
     } catch (error) {
         // console.log("service error", error);
         throw error;
