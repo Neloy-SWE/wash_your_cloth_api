@@ -24,7 +24,7 @@ app.use((req, res, next) => {
 
 const globalLimiter = rateLimit({
     windowMs: 1 * 60 * 1000,
-    limit: 5,
+    limit: process.env.RATE_LIMIT,
     handler: (req, res, next) => {
         res.status(429).json({ status: "limitExceeded", message: "Too many requests" });
     }
@@ -52,8 +52,8 @@ app.use((error, req, res, next) => {
     // .json({ error: error.errors?.map(e => e.message) || "Internal Server Error" });
 });
 
-db.sequelize.sync({ alter: true }).then(() => {
-    // db.sequelize.sync().then(() => {
+db.sequelize.sync({ alter: true }).then(() => { // modify/add new column along with create missing table
+    // db.sequelize.sync().then(() => { // only create missing table
     console.log("Database synchronized");
     const PORT = process.env.PORT;
     app.listen(PORT, () => {

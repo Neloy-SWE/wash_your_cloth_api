@@ -102,6 +102,10 @@ export const serviceResourcePriceAdd = async (requestBody, userId) => {
             generateError("Invalid item", 400);
         }
 
+        if (!checkItem.isActive) {
+            generateError("This item is not available", 400);
+        }
+
         const existingPrice = await db.Price.findOne({
             where: requestBody,
         });
@@ -124,15 +128,23 @@ export const serviceResourcePriceList = async (id, role) => {
     try {
 
         let queryAttributes;
+        let mainCondition;
+        let itemCondition;
 
         if (role === "shop") {
             queryAttributes = [
                 "id",
                 [col("Service.name"), "serviceName"],
                 [col("Item.name"), "itemName"],
+                [col("Item.isActive"), "isItemActive"],
                 "price",
                 "ironPressPrice",
+                "isActive"
             ];
+            mainCondition = {};
+            itemCondition = {
+                userId: id,
+            };
         } else {
             queryAttributes = [
                 [col("Service.name"), "serviceName"],
@@ -140,14 +152,22 @@ export const serviceResourcePriceList = async (id, role) => {
                 "price",
                 "ironPressPrice",
             ];
+            mainCondition = {
+                isActive: true,
+            };
+            itemCondition = {
+                userId: id,
+                isActive: true,
+            }
         }
 
         const priceList = await db.Price.findAll({
+            where: mainCondition,
             attributes: queryAttributes,
             include: [
                 {
                     model: db.Item,
-                    where: { userId: id },
+                    where: itemCondition,
                     attributes: [],
                 },
                 {
