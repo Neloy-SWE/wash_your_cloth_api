@@ -139,7 +139,7 @@ export const serviceResourcePriceAdd = async (requestBody, userId) => {
     }
 }
 
-export const serviceResourcePriceList = async (id, role) => {
+export const serviceResourcePriceList = async (userId, role) => {
     try {
 
         let queryAttributes;
@@ -160,7 +160,7 @@ export const serviceResourcePriceList = async (id, role) => {
             ];
             mainCondition = {};
             itemCondition = {
-                userId: id,
+                userId,
             };
         } else {
             queryAttributes = [
@@ -175,7 +175,7 @@ export const serviceResourcePriceList = async (id, role) => {
                 isActive: true,
             };
             itemCondition = {
-                userId: id,
+                userId,
                 isActive: true,
             }
         }
@@ -231,6 +231,43 @@ export const serviceResourcePriceActivation = async (id, userId) => {
             status: "success",
             message: "Price status updated",
         };
+
+    } catch (error) {
+        // console.log("service error", error);
+        throw error;
+    }
+}
+
+export const serviceResourcePriceUpate = async (requestBody, id, userId) => {
+    try {
+        const currentPrice = await db.Price.findOne({
+            where: {
+                id
+            },
+            include: [{
+                model: db.Item,
+                required: true,
+                include: [{
+                    model: db.User,
+                    required: true,
+                    where: {
+                        id: userId,
+                    }
+                }],
+            }],
+        });
+
+        if (!currentPrice) {
+            generateError("Invalid price", 400);
+        }
+
+        // const { price, discountPrice, conveyancePrice, ironPressPrice } = requestBody;
+        const updatePrice = await currentPrice.update(requestBody);
+
+        return {
+            status: "success",
+            message: "Price details updated",
+        }
 
     } catch (error) {
         // console.log("service error", error);

@@ -1,7 +1,7 @@
 import express from "express";
 import { middlewareAuth } from "../../middleware/middleware_auth.js";
 import { middlewareRole } from "../../middleware/middleware_role.js";
-import { controllerResourceItemActivation, controllerResourceItemAdd, controllerResourceItemList, controllerResourcePriceActivation, controllerResourcePriceAdd, controllerResourcePriceListShop, controllerResourcePriceListUser, controllerResourceServiceList } from "./controller_resource.js";
+import { controllerResourceItemActivation, controllerResourceItemAdd, controllerResourceItemList, controllerResourcePriceActivation, controllerResourcePriceAdd, controllerResourcePriceListShop, controllerResourcePriceListUser, controllerResourcePriceUpdate, controllerResourceServiceList } from "./controller_resource.js";
 
 const routerResource = express.Router();
 
@@ -13,5 +13,6 @@ routerResource.post("/price-add", middlewareAuth, middlewareRole("shop"), contro
 routerResource.get("/price-list-shop", middlewareAuth, middlewareRole("shop"), controllerResourcePriceListShop);
 routerResource.get("/price-list-user/:shopId", middlewareAuth, middlewareRole("user"), controllerResourcePriceListUser);
 routerResource.patch("/price-activation/:priceId", middlewareAuth, middlewareRole("shop"), controllerResourcePriceActivation);
+routerResource.patch("/price-update/:priceId", middlewareAuth, middlewareRole("shop"), controllerResourcePriceUpdate);
 
 export default routerResource;

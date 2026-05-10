@@ -89,3 +89,15 @@ export const controllerResourcePriceActivation = async (req, res, next) => {
         next(error);
     }
 }
+
+export const controllerResourcePriceUpdate = async (req, res, next) => {
+    try {
+        managerError(req.params.priceId, "id");
+        managerError(req.body, "updatePrice");
+        const result = await serviceResourcePriceUpate(req.body, req.params.priceId, req.user.id);
+        res.status(200).json(result);
+    } catch (error) {
+        // console.log("controller error", error);
+        next(error);
+    }
+}
