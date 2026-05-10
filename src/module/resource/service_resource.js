@@ -68,9 +68,14 @@ export const serviceResourceItemList = async (userId) => {
     }
 }
 
-export const serviceResourceItemActivation = async (id) => {
+export const serviceResourceItemActivation = async (id, userId) => {
     try {
-        const item = await db.Item.findByPk(id);
+        const item = await db.Item.findOne({
+            where: {
+                id,
+                userId,
+            }
+        });
 
         if (!item) {
             generateError("Invalid item", 400);
@@ -91,14 +96,24 @@ export const serviceResourceItemActivation = async (id) => {
 
 export const serviceResourcePriceAdd = async (requestBody, userId) => {
     try {
-        const { itemId } = requestBody;
+        const { itemId, serviceId } = requestBody;
+        const checkService = await db.Service.findOne({
+            where: {
+                id: serviceId,
+            },
+        });
+
+        if (!checkService) {
+            generateError("Invalid service", 400);
+        }
+
         const checkItem = await db.Item.findOne({
             where: {
                 id: itemId,
             },
         });
 
-        if (checkItem.userId !== userId) {
+        if (!checkItem || checkItem.userId !== userId) {
             generateError("Invalid item", 400);
         }
 
@@ -187,9 +202,24 @@ export const serviceResourcePriceList = async (id, role) => {
     }
 }
 
-export const serviceResourcePriceActivation = async (id) => {
+export const serviceResourcePriceActivation = async (id, userId) => {
     try {
-        const price = await db.Price.findByPk(id);
+        const price = await db.Price.findOne({
+            where: {
+                id
+            },
+            include: [{
+                model: db.Item,
+                required: true,
+                include: [{
+                    model: db.User,
+                    required: true,
+                    where: {
+                        id: userId,
+                    }
+                }],
+            }],
+        });
 
         if (!price) {
             generateError("Invalid price", 400);

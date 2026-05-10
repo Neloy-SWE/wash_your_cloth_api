@@ -17,6 +17,8 @@ const token = authHeader && authHeader.split(' ')[1];
 
 - it will be greate if i create shop table to store shop details and make user to shop one to one relation and add role: shop at user table rather than create separate shop as user table.
 
-- price active deactive api.
+- price active deactive api. (done)
+- price update api.
+
 - log out api.
   - expire token, (not refreshToken).
