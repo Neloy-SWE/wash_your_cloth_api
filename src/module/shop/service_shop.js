@@ -44,6 +44,7 @@ export const serviceShopView = async (user) => {
         const { shopName, openTime, closeTime, weekends, status } = shop;
 
         const body = {
+            id: shop.id,
             shopName,
             ownerFirstName: firstName,
             ownerLastName: lastName,
