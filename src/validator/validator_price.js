@@ -5,7 +5,7 @@ const validatorPrice = Joi.object({
         .guid({ version: 'uuidv4' })
         .required()
         .messages({
-            "string.guid": "Invalid Service ID format",
+            "string.guid": "Invalid service ID format",
             "any.required": "Service ID is required",
             "string.empty": "Service ID cannot be empty",
         }),
@@ -13,7 +13,7 @@ const validatorPrice = Joi.object({
         .guid({ version: 'uuidv4' })
         .required()
         .messages({
-            "string.guid": "Invalid Item ID format",
+            "string.guid": "Invalid item ID format",
             "any.required": "Item ID is required",
             "string.empty": "Item ID cannot be empty",
         }),

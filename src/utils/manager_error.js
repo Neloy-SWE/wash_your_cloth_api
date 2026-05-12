@@ -13,6 +13,7 @@ import { validate, version } from "uuid";
 import validatorItem from "../validator/validator_item.js";
 import validatorPrice from "../validator/validator_price.js";
 import validatorUpdatePrice from "../validator/validator_update_price.js";
+import validatorOrder from "../validator/validator_order.js";
 
 const myEnv = dotenv.config();
 dotenvExpand.expand(myEnv);
@@ -106,6 +107,12 @@ export const managerError = (object, key) => {
         case "updatePrice":
             {
                 const { error } = validatorUpdatePrice.validate(object);
+                currentError = error;
+                break;
+            }
+        case "order":
+            {
+                const { error } = validatorOrder.validate(object);
                 currentError = error;
                 break;
             }
