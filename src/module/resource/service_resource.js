@@ -1,6 +1,6 @@
 import { col } from "sequelize";
 import db from "../../model/index_model.js";
-import { generateError } from "../../utils/manager_error.js";
+import { generateError, managerError } from "../../utils/manager_error.js";
 
 export const serviceResourceServiceList = async () => {
     try {
@@ -139,7 +139,7 @@ export const serviceResourcePriceAdd = async (requestBody, userId) => {
     }
 }
 
-export const serviceResourcePriceList = async (userId, role) => {
+export const serviceResourcePriceList = async (keyId, role) => {
     try {
 
         let queryAttributes;
@@ -160,9 +160,13 @@ export const serviceResourcePriceList = async (userId, role) => {
             ];
             mainCondition = {};
             itemCondition = {
-                userId,
+                userId: keyId,
             };
         } else {
+            const shop = await db.Shop.findByPk(keyId);
+            if (!shop) {
+                managerError("Invalid shop", 400);
+            }
             queryAttributes = [
                 [col("Service.name"), "serviceName"],
                 [col("Item.name"), "itemName"],
@@ -175,7 +179,7 @@ export const serviceResourcePriceList = async (userId, role) => {
                 isActive: true,
             };
             itemCondition = {
-                userId,
+                userId: shop.userId,
                 isActive: true,
             }
         }
