@@ -41,3 +41,25 @@ export const serviceOrderPlace = async (requestBody, user) => {
         throw error;
     }
 }
+
+export const serviceOrderList = async (userId) => {
+    try {
+        const orderList = await db.Order.findAll({
+            where: {
+                userId,
+            },
+            attributes: [
+                "id",
+                "trackingId",
+                "totalPrice",
+                "status",
+            ]
+        },);
+
+        return orderList;
+
+    } catch (error) {
+        // console.log("service error", error);
+        throw error;
+    }
+}
