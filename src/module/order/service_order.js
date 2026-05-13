@@ -55,10 +55,12 @@ export const serviceOrderList = async (keyId, role, userId) => {
             }
             mainCondition = {
                 shopId: keyId,
+                isActive: true,
             };
         } else if (role === "user") {
             mainCondition = {
                 userId: keyId,
+                isActive: true,
             };
         }
 

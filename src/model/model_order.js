@@ -30,6 +30,11 @@ const Order = sequelize.define("Order", {
         allowNull: false,
         defaultValue: "pending",
     },
+    isActive: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true,
+        allowNull: false,
+    },
 },
     {
         timestamps: true,
