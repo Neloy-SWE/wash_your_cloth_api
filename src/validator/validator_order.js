@@ -10,14 +10,14 @@ const validatorOrder = Joi.object({
             "any.required": "Shop ID is required",
             "string.empty": "Shop ID cannot be empty",
         }),
-    totalPrice: Joi.number()
-        .positive()
-        .required()
-        .messages({
-            "number.base": "Total price must be a number",
-            "number.positive": "Total price must be a positive value",
-            "any.required": "Total price is required",
-        }),
+    // totalPrice: Joi.number()
+    //     .positive()
+    //     .required()
+    //     .messages({
+    //         "number.base": "Total price must be a number",
+    //         "number.positive": "Total price must be a positive value",
+    //         "any.required": "Total price is required",
+    //     }),
     note: Joi.string().min(0).max(500).messages({
         "string.max": "Note must be at most 500 characters long",
     }),

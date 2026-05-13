@@ -7,6 +7,7 @@ import rateLimit from "express-rate-limit";
 import routeUser from "./module/user/route_user.js";
 import routerShop from "./module/shop/route_shop.js";
 import routerResource from "./module/resource/route_resource.js";
+import routerOrder from "./module/order/route_order.js";
 
 const myEnv = dotenv.config();
 dotenvExpand.expand(myEnv);
@@ -40,9 +41,10 @@ app.get("/", (req, res) => {
 
 // Register routes
 app.use("/auth", routerAuth); // auth
-app.use("/user", routeUser) // profile
-app.use("/shop", routerShop) // shop
-app.use("/resource", routerResource) // resource
+app.use("/user", routeUser); // profile
+app.use("/shop", routerShop); // shop
+app.use("/resource", routerResource); // resource
+app.use("/order", routerOrder); // order
 
 // Global error handling middleware
 app.use((error, req, res, next) => {

@@ -21,7 +21,7 @@ const validatorOrderItem = Joi.object({
     }),
     unitPrice: Joi.number().min(0).required().messages({
         "number.base": "Unit price must be a number",
-        "number.min": "Unit press price cannot be negative",
+        "number.min": "Unit price cannot be negative",
         "any.required": "Unit price is required",
     }),
     isIronPress: Joi.boolean().required().messages({
@@ -33,7 +33,7 @@ const validatorOrderItem = Joi.object({
         "number.min": "Iron press press price cannot be negative",
         "any.required": "Iron press price is required",
     }),
-    totalPrice: Joi.number().min(0).required()
+    // totalPrice: Joi.number().min(0).required(),
 });
 
 export default validatorOrderItem;
