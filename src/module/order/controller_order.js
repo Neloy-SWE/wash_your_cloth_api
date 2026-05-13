@@ -15,7 +15,19 @@ export const controllerOrderPlace = async (req, res, next) => {
 
 export const controllerOrderListUser = async (req, res, next) => {
     try {
-        const result = await serviceOrderList(req.user.id);
+        const result = await serviceOrderList(req.user.id, req.role);
+        res.status(200).json(result);
+
+    } catch (error) {
+        // console.log("controller error", error);
+        next(error);
+    }
+}
+
+export const controllerOrderListShop = async (req, res, next) => {
+    try {
+        managerError(req.params.shopId, "id");
+        const result = await serviceOrderList(req.params.shopId, req.role, req.user.id);
         res.status(200).json(result);
 
     } catch (error) {

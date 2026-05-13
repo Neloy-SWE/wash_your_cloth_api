@@ -1,4 +1,5 @@
 import db from "../../model/index_model.js";
+import { generateError } from "../../utils/manager_error.js";
 import managerOrderPrice from "../../utils/manager_order_price.js";
 import managerTrakingId from "../../utils/manager_tracking_id.js";
 
@@ -42,12 +43,27 @@ export const serviceOrderPlace = async (requestBody, user) => {
     }
 }
 
-export const serviceOrderList = async (userId) => {
+export const serviceOrderList = async (keyId, role, userId) => {
+
     try {
+        let mainCondition;
+
+        if (role === "shop") {
+            const shop = await db.Shop.findByPk(keyId);
+            if (!shop || shop.userId !== userId) {
+                generateError("Wrong shop", 400);
+            }
+            mainCondition = {
+                shopId: keyId,
+            };
+        } else if (role === "user") {
+            mainCondition = {
+                userId: keyId,
+            };
+        }
+
         const orderList = await db.Order.findAll({
-            where: {
-                userId,
-            },
+            where: mainCondition,
             attributes: [
                 "id",
                 "trackingId",

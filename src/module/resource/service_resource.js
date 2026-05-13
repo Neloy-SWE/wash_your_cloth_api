@@ -162,7 +162,7 @@ export const serviceResourcePriceList = async (keyId, role) => {
             itemCondition = {
                 userId: keyId,
             };
-        } else {
+        } else if (role === "user") {
             const shop = await db.Shop.findByPk(keyId);
             if (!shop) {
                 managerError("Invalid shop", 400);
