@@ -3,6 +3,7 @@ import db from "../../model/index_model.js";
 import { generateError } from "../../utils/manager_error.js";
 import managerOrderPrice from "../../utils/manager_order_price.js";
 import managerTrakingId from "../../utils/manager_tracking_id.js";
+import validatorEntry from "../../validator/validator_entry.js";
 
 export const serviceOrderPlace = async (requestBody, user) => {
     const t = await db.sequelize.transaction();
@@ -169,6 +170,39 @@ export const serviceOrderDetailsShop = async (orderId, userId) => {
         }
 
         return order;
+    } catch (error) {
+        // console.log("service error", error);
+        throw error;
+    }
+}
+
+export const serviceOrderDeactive = async (orderId, userId) => {
+    /**
+     * this api will simply deactive the order.
+     * but user will be notified that the order is deleted. 
+     */
+    try {
+        const order = await db.Order.findOne({
+            where: {
+                id: orderId,
+                userId,
+                isActive: true,
+            }
+        });
+        if (!order) {
+            generateError("Wrong order", 400);
+        }
+
+        validatorEntry(order.status, ["pending", "rejected"], "order already processing", 400);
+
+        order.isActive = false;
+        await order.save();
+
+        return {
+            status: "success",
+            message: "Order deleted",
+        }
+
     } catch (error) {
         // console.log("service error", error);
         throw error;
