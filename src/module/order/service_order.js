@@ -83,7 +83,7 @@ export const serviceOrderList = async (keyId, role, userId) => {
     }
 }
 
-export const serviceOrderDetails = async (orderId, userId) => {
+export const serviceOrderDetailsUser = async (orderId, userId) => {
     try {
         const order = await db.Order.findOne({
             where: {
@@ -112,7 +112,55 @@ export const serviceOrderDetails = async (orderId, userId) => {
                 },
                 {
                     model: db.OrderItem,
-                    attributes: ["serviceName", "itemName", "quantity", "unitPrice", "totalPrice"]
+                    attributes: ["id", "serviceName", "itemName", "quantity", "unitPrice", "isIronPress", "ironPressPrice", "totalPrice"]
+                }
+            ],
+        });
+        if (!order) {
+            generateError("Wrong order", 400);
+        }
+
+        return order;
+    } catch (error) {
+        // console.log("service error", error);
+        throw error;
+    }
+}
+
+export const serviceOrderDetailsShop = async (orderId, userId) => {
+    try {
+        const shop = await db.Shop.findOne({
+            where: {
+                userId,
+            },
+        });
+
+        if (!shop) {
+            generateError("Wrong shop", 400);
+        }
+
+        const order = await db.Order.findOne({
+            where: {
+                id: orderId,
+                shopId: shop.id,
+            },
+            attributes: [
+                "trackingId",
+                "status",
+                "totalPrice",
+                [col("User.firstName"), "userFirstName"],
+                [col("User.lastName"), "userLastName"],
+                [col("User.address"), "userAddress"],
+                [col("User.phone"), "userPhone"],
+            ],
+            include: [
+                {
+                    model: db.User,
+                    attributes: [],
+                },
+                {
+                    model: db.OrderItem,
+                    attributes: ["id", "serviceName", "itemName", "quantity", "unitPrice", "isIronPress", "ironPressPrice", "totalPrice"]
                 }
             ],
         });

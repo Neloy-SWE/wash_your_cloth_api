@@ -1,5 +1,5 @@
 import { managerError } from "../../utils/manager_error.js";
-import { serviceOrderDetails, serviceOrderList, serviceOrderPlace } from "./service_order.js";
+import { serviceOrderDetailsShop, serviceOrderDetailsUser, serviceOrderList, serviceOrderPlace } from "./service_order.js";
 
 export const controllerOrderPlace = async (req, res, next) => {
     try {
@@ -39,7 +39,19 @@ export const controllerOrderListShop = async (req, res, next) => {
 export const controllerOrderDetailsUser = async (req, res, next) => {
     try {
         managerError(req.params.orderId, "id");
-        const result = await serviceOrderDetails(req.params.orderId, req.user.id);
+        const result = await serviceOrderDetailsUser(req.params.orderId, req.user.id);
+        res.status(200).json(result);
+
+    } catch (error) {
+        // console.log("controller error", error);
+        next(error);
+    }
+}
+
+export const controllerOrderDetailsShop = async (req, res, next) => {
+    try {
+        managerError(req.params.orderId, "id");
+        const result = await serviceOrderDetailsShop(req.params.orderId, req.user.id);
         res.status(200).json(result);
 
     } catch (error) {

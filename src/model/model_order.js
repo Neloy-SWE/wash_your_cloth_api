@@ -37,6 +37,15 @@ const Order = sequelize.define("Order", {
     },
 },
     {
+        indexes: [
+            {
+                unique: false,
+                fields: ['trackingId']
+            }
+
+        ]
+    },
+    {
         timestamps: true,
     }
 );
