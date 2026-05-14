@@ -1,3 +1,4 @@
+import { col } from "sequelize";
 import db from "../../model/index_model.js";
 import { generateError } from "../../utils/manager_error.js";
 import managerOrderPrice from "../../utils/manager_order_price.js";
@@ -76,6 +77,50 @@ export const serviceOrderList = async (keyId, role, userId) => {
 
         return orderList;
 
+    } catch (error) {
+        // console.log("service error", error);
+        throw error;
+    }
+}
+
+export const serviceOrderDetails = async (orderId, userId) => {
+    try {
+        const order = await db.Order.findOne({
+            where: {
+                id: orderId,
+                userId
+            },
+            attributes: [
+                "id",
+                "trackingId",
+                "status",
+                "totalPrice",
+                [col("Shop.shopName"), "shopName"],
+                [col("Shop->User.firstName"), "ownerFirstName"],
+                [col("Shop->User.lastName"), "ownerLastName"],
+                [col("Shop->User.address"), "shopAddress"],
+                [col("Shop->User.phone"), "shopPhone"],
+            ],
+            include: [
+                {
+                    model: db.Shop,
+                    attributes: [],
+                    include: [{
+                        model: db.User,
+                        attributes: [],
+                    }],
+                },
+                {
+                    model: db.OrderItem,
+                    attributes: ["serviceName", "itemName", "quantity", "unitPrice", "totalPrice"]
+                }
+            ],
+        });
+        if (!order) {
+            generateError("Wrong order", 400);
+        }
+
+        return order;
     } catch (error) {
         // console.log("service error", error);
         throw error;
