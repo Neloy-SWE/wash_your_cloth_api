@@ -57,10 +57,18 @@ app.use((error, req, res, next) => {
 db.sequelize.sync({ alter: true }).then(() => { // modify/add new column along with create missing table
     // db.sequelize.sync().then(() => { // only create missing table
     console.log("Database synchronized");
+
     const PORT = process.env.PORT;
-    app.listen(PORT, () => {
-        console.log(`Server is running on port ${PORT}`);
+    // app.listen(PORT, () => {
+    //     console.log(`Server is running on port ${PORT}`);
+    // });
+
+    // allows access from any device on the network:
+    const HOST = process.env.HOST;
+    app.listen(PORT, HOST, () => {
+        console.log(`Server is running on port ${PORT} and host ${HOST}`);
     });
+
 }).catch((error) => {
     console.error("Unable to connect to the database:", error);
 });
