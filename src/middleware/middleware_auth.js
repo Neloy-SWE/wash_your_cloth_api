@@ -18,6 +18,10 @@ export const middlewareAuth = async (req, res, next) => {
       generateError(errorMessage, 401);
     }
 
+    // if (user.verified === false) {
+    //   generateError("User is not verified", 401);
+    // }
+
     req.user = user;
     req.role = payload.role;
     next();

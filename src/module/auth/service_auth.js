@@ -148,6 +148,7 @@ export const serviceAuthLogin = async ({
                     refreshToken: existingToken.refreshToken,
                     expirationToken: expirationToken,
                     expirationRefreshToken: existingToken.expirationRefreshToken,
+                    role: payload.role,
                 };
             }
             else {
@@ -168,6 +169,7 @@ export const serviceAuthLogin = async ({
                     refreshToken: refreshToken,
                     expirationToken: expirationToken,
                     expirationRefreshToken: expirationRefreshToken,
+                    role: payload.role,
                 };
             }
             statusCode = 200;
@@ -238,6 +240,7 @@ export const serviceAuthRefreshToken = async (refreshToken) => {
                 refreshToken: existingToken.refreshToken,
                 expirationToken: expirationToken,
                 expirationRefreshToken: existingToken.expirationRefreshToken,
+                role: payload.role,
             };
             statusCode = 200;
         }
