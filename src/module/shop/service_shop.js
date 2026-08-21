@@ -41,7 +41,7 @@ export const serviceShopView = async (user) => {
         const shop = await db.Shop.findOne({
             where: { userId: id, },
         });
-        const { shopName, openTime, closeTime, weekends, status } = shop;
+        const { shopName, openTime, closeTime, weekends, status, deliveryCharge } = shop;
 
         const body = {
             id: shop.id,
@@ -56,6 +56,7 @@ export const serviceShopView = async (user) => {
             closeTime: DateTime.fromFormat(closeTime, "HH:mm:ss").toFormat("hh:mm a"),
             weekends,
             status,
+            deliveryCharge,
         }
 
         return {
@@ -71,7 +72,7 @@ export const serviceShopView = async (user) => {
 export const serviceShopUpdate = async (requestBody, user) => {
     try {
         const { id } = user;
-        const { ownerFirstName, ownerLastName, shopAddress, longitude, latitude, shopName, openTime, closeTime, weekends } = requestBody;
+        const { ownerFirstName, ownerLastName, shopAddress, longitude, latitude, shopName, openTime, closeTime, weekends, deliveryCharge } = requestBody;
         await db.sequelize.transaction(async (t) => {
 
             await db.User.update(
@@ -90,7 +91,8 @@ export const serviceShopUpdate = async (requestBody, user) => {
                     shopName: shopName,
                     openTime: openTime,
                     closeTime: closeTime,
-                    weekends: weekends
+                    weekends: weekends,
+                    deliveryCharge: deliveryCharge
                 },
                 { where: { userId: id }, transaction: t }
             );
@@ -118,6 +120,7 @@ export const serviceShopList = async () => {
                 "id",
                 "shopName",
                 "status",
+                "deliveryCharge",
                 [col("User.address"), "shopAddress"],
             ],
             include: [
@@ -154,10 +157,11 @@ export const serviceShopDetails = async (shopId) => {
                     "shopName",
                     [col("User.firstName"), "ownerFirstName"],
                     [col("User.lastName"), "ownerLastName"],
-                    [col("User.phone"), "phone"],
+                    [col("User.phone"), "shopPhone"],
                     [col("User.address"), "shopAddress"],
                     [col("User.longitude"), "longitude"],
                     [col("User.latitude"), "latitude"],
+                    "deliveryCharge",
                     "openTime",
                     "closeTime",
                     "weekends",
