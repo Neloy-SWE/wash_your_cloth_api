@@ -36,6 +36,10 @@ const Shop = sequelize.define("Shop", {
         allowNull: false,
         defaultValue: true,
     },
+    deliveryCharge: {
+        type: DataTypes.DOUBLE,
+        allowNull: false,
+    },
     isActive: {
         type: DataTypes.BOOLEAN,
         allowNull: false,

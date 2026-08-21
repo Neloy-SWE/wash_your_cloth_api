@@ -11,6 +11,10 @@ const Order = sequelize.define("Order", {
         type: DataTypes.STRING,
         allowNull: false,
     },
+    deliveryCharge: {
+        type: DataTypes.DOUBLE,
+        allowNull: false,
+    },
     totalPrice: {
         type: DataTypes.DOUBLE,
         allowNull: false,
@@ -21,7 +25,7 @@ const Order = sequelize.define("Order", {
         validate: {
             len: {
                 len: [0, 500],
-                msg: "First name must be between 2 and 200 characters long",
+                msg: "Note must be at most 500 characters long",
             }
         }
     },
