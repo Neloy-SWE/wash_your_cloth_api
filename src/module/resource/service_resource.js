@@ -154,7 +154,6 @@ export const serviceResourcePriceList = async (keyId, role) => {
                 [col("Item.isActive"), "isItemActive"],
                 "price",
                 "discountPrice",
-                "conveyancePrice",
                 "ironPressPrice",
                 "isActive"
             ];
@@ -168,11 +167,11 @@ export const serviceResourcePriceList = async (keyId, role) => {
                 managerError("Invalid shop", 400);
             }
             queryAttributes = [
+                "id",
                 [col("Service.name"), "serviceName"],
                 [col("Item.name"), "itemName"],
                 "price",
                 "discountPrice",
-                "conveyancePrice",
                 "ironPressPrice",
             ];
             mainCondition = {

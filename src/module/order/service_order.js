@@ -11,9 +11,33 @@ export const serviceOrderPlace = async (requestBody, user) => {
     try {
         const { shopId, note, items } = requestBody;
 
+        const shop = await db.Shop.findByPk(shopId, { transaction: t });
+        if (!shop) {
+            generateError("Invalid request", 400);
+        }
+        const deliveryCharge = Number(shop.deliveryCharge || 0);
+
+        const priceIdList = [...new Set(items.map((item) => item.priceId))];
+        const priceList = await db.Price.findAll({
+            where: {
+                id: priceIdList,
+                isActive: true,
+            },
+            include: [
+                { model: db.Service, attributes: ["name"] },
+                { model: db.Item, attributes: ["name"] },
+            ],
+            transaction: t,
+        });
+        if (priceList.length !== priceIdList.length) {
+            generateError("Invalid request", 400);
+        }
+
         const trackingId = managerTrakingId();
 
-        const { itemsWithTotalPrice, totalPriceOrder } = managerOrderPrice(items);
+        const { itemsWithTotalPrice, subtotalOrder } = managerOrderPrice(items, priceList);
+
+        const totalPriceOrder = subtotalOrder + deliveryCharge;
 
         const newOrder = await db.Order.create({
             trackingId,
@@ -96,6 +120,7 @@ export const serviceOrderDetailsUser = async (orderId, userId) => {
                 "trackingId",
                 "status",
                 "totalPrice",
+                "deliveryCharge",
                 [col("Shop.shopName"), "shopName"],
                 [col("Shop->User.firstName"), "ownerFirstName"],
                 [col("Shop->User.lastName"), "ownerLastName"],
@@ -149,6 +174,7 @@ export const serviceOrderDetailsShop = async (orderId, userId) => {
                 "trackingId",
                 "status",
                 "totalPrice",
+                "deliveryCharge",
                 [col("User.firstName"), "userFirstName"],
                 [col("User.lastName"), "userLastName"],
                 [col("User.address"), "userAddress"],

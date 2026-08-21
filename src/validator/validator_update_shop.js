@@ -28,6 +28,14 @@ const validatorUpdateShop = Joi.object({
         "string.min": "Shop name must be at least 3 characters long",
         "string.max": "Shop name must be at most 200 characters long",
     }),
+    deliveryCharge: Joi.number()
+        .positive()
+        .required()
+        .messages({
+            "number.base": "Delivery charge must be a number",
+            "number.positive": "Delivery charge must be a positive value",
+            "any.required": "Delivery charge is required",
+        }),
     openTime: Joi.string()
         .regex(timeRegex)
         .required()
