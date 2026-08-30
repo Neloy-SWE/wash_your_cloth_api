@@ -47,6 +47,7 @@ export const serviceOrderPlace = async (requestBody, user) => {
             trackingId,
             totalPrice: totalPriceOrder,
             OrderItems: itemsWithTotalPrice,
+            deliveryCharge: deliveryCharge,
         },
             {
                 include: [{
@@ -97,7 +98,8 @@ export const serviceOrderList = async (keyId, role, userId) => {
                 "trackingId",
                 "totalPrice",
                 "status",
-            ]
+            ],
+            order: [['createdAt', 'DESC']],
         },);
 
         return orderList;
@@ -121,6 +123,7 @@ export const serviceOrderDetailsUser = async (orderId, userId) => {
                 "status",
                 "totalPrice",
                 "deliveryCharge",
+                "note",
                 [col("Shop.shopName"), "shopName"],
                 [col("Shop->User.firstName"), "ownerFirstName"],
                 [col("Shop->User.lastName"), "ownerLastName"],
@@ -175,6 +178,7 @@ export const serviceOrderDetailsShop = async (orderId, userId) => {
                 "status",
                 "totalPrice",
                 "deliveryCharge",
+                "note",
                 [col("User.firstName"), "userFirstName"],
                 [col("User.lastName"), "userLastName"],
                 [col("User.address"), "userAddress"],
