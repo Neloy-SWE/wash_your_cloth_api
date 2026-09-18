@@ -52,13 +52,17 @@ export const serviceUserChangePassword = async (requestBody, user) => {
 
 export const serviceUserChangePhone = async (requestBody, user) => {
     try {
-        const { newPhone } = requestBody;
+        const { oldPhone, newPhone } = requestBody;
         const { id, phone } = user;
 
         const existingUser = await db.User.findOne({ where: { phone: newPhone } });
 
         if (existingUser) {
             generateError("This phone number is not available", 500);
+        }
+
+        if (oldPhone !== phone) {
+            generateError("Invalid request", 400);
         }
 
         await db.OTP.update(
