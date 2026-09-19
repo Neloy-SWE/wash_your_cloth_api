@@ -7,7 +7,7 @@ const routerOrder = express.Router();
 
 routerOrder.post("/place", middlewareAuth, middlewareRole("user"), controllerOrderPlace);
 routerOrder.get("/list-user", middlewareAuth, middlewareRole("user"), controllerOrderListUser);
-routerOrder.get("/list-shop/:shopId", middlewareAuth, middlewareRole("shop"), controllerOrderListShop);
+routerOrder.get("/list-shop", middlewareAuth, middlewareRole("shop"), controllerOrderListShop);
 routerOrder.get("/details-user/:orderId", middlewareAuth, middlewareRole("user"), controllerOrderDetailsUser);
 routerOrder.get("/details-shop/:orderId", middlewareAuth, middlewareRole("shop"), controllerOrderDetailsShop);
 routerOrder.patch("/delete/:orderId", middlewareAuth, middlewareRole("user"), controllerOrderDeactive);
