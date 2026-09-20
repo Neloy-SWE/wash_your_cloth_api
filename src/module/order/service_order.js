@@ -70,23 +70,27 @@ export const serviceOrderPlace = async (requestBody, user) => {
     }
 }
 
-export const serviceOrderList = async (keyId, role, userId) => {
+export const serviceOrderList = async (userId, role) => {
 
     try {
         let mainCondition;
 
         if (role === "shop") {
-            const shop = await db.Shop.findByPk(keyId);
-            if (!shop || shop.userId !== userId) {
+            const shop = await db.Shop.findOne({
+                where: {
+                    userId
+                }
+            });
+            if (!shop) {
                 generateError("Wrong shop", 400);
             }
             mainCondition = {
-                shopId: keyId,
+                shopId: shop.id,
                 isActive: true,
             };
         } else if (role === "user") {
             mainCondition = {
-                userId: keyId,
+                userId: userId,
                 isActive: true,
             };
         }
