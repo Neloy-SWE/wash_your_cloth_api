@@ -55,14 +55,14 @@ export const serviceUserChangePhone = async (requestBody, user) => {
         const { oldPhone, newPhone } = requestBody;
         const { id, phone } = user;
 
+        if (oldPhone !== phone) {
+            generateError("Invalid request", 400);
+        }
+
         const existingUser = await db.User.findOne({ where: { phone: newPhone } });
 
         if (existingUser) {
             generateError("This phone number is not available", 500);
-        }
-
-        if (oldPhone !== phone) {
-            generateError("Invalid request", 400);
         }
 
         await db.OTP.update(

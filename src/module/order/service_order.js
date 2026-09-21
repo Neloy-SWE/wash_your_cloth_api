@@ -178,6 +178,7 @@ export const serviceOrderDetailsShop = async (orderId, userId) => {
                 shopId: shop.id,
             },
             attributes: [
+                "id",
                 "trackingId",
                 "status",
                 "totalPrice",
