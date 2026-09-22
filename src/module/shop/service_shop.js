@@ -36,38 +36,135 @@ import { DateTime } from "luxon";
 
 export const serviceShopView = async (user) => {
     try {
-        const { id, firstName, lastName, phone, address, longitude, latitude } = user;
+        const {
+            id,
+            firstName,
+            lastName,
+            phone,
+            address,
+            longitude,
+            latitude,
+        } = user;
 
         const shop = await db.Shop.findOne({
-            where: { userId: id, },
+            where: { userId: id },
         });
-        const { shopName, openTime, closeTime, weekends, status, deliveryCharge } = shop;
+
+        if (!shop) {
+            throw new Error("Shop not found");
+        }
+
+        const {
+            shopName,
+            openTime,
+            closeTime,
+            weekends,
+            status,
+            deliveryCharge,
+        } = shop;
+
+        const orderMetrics = await db.Order.findOne({
+            where: {
+                shopId: shop.id,
+            },
+            attributes: [
+                [
+                    db.sequelize.literal(
+                        `COUNT(*) FILTER (WHERE status = 'pending')`
+                    ),
+                    "pendingCount",
+                ],
+                [
+                    db.sequelize.literal(
+                        `COUNT(*) FILTER (WHERE status = 'accepted')`
+                    ),
+                    "acceptedCount",
+                ],
+                [
+                    db.sequelize.literal(
+                        `COUNT(*) FILTER (WHERE status = 'ready')`
+                    ),
+                    "readyCount",
+                ],
+                [
+                    db.sequelize.literal(
+                        `COUNT(*) FILTER (WHERE status = 'delivered')`
+                    ),
+                    "deliveredCount",
+                ],
+                [
+                    db.sequelize.literal(
+                        `COUNT(*) FILTER (WHERE status = 'rejected')`
+                    ),
+                    "rejectedCount",
+                ],
+                [
+                    db.sequelize.fn("COUNT", db.sequelize.col("id")),
+                    "totalOrders",
+                ],
+                [
+                    db.sequelize.literal(
+                        `COALESCE(SUM("totalPrice") FILTER (WHERE status = 'delivered'), 0)`
+                    ),
+                    "totalIncome",
+                ],
+            ],
+            raw: true,
+        });
+
+        const pending = Number(orderMetrics?.pendingCount || 0);
+        const accepted = Number(orderMetrics?.acceptedCount || 0);
+        const ready = Number(orderMetrics?.readyCount || 0);
+        const delivered = Number(orderMetrics?.deliveredCount || 0);
+        const rejected = Number(orderMetrics?.rejectedCount || 0);
+        const totalOrders = Number(orderMetrics?.totalOrders || 0);
+        const totalIncome = Number(orderMetrics?.totalIncome || 0);
 
         const body = {
             id: shop.id,
             shopName,
+
             ownerFirstName: firstName,
             ownerLastName: lastName,
+
             shopPhone: phone,
             shopAddress: address,
+
             longitude,
             latitude,
-            openTime: DateTime.fromFormat(openTime, "HH:mm:ss").toFormat("hh:mm a"),
-            closeTime: DateTime.fromFormat(closeTime, "HH:mm:ss").toFormat("hh:mm a"),
+
+            openTime: DateTime
+                .fromFormat(openTime, "HH:mm:ss")
+                .toFormat("hh:mm a"),
+
+            closeTime: DateTime
+                .fromFormat(closeTime, "HH:mm:ss")
+                .toFormat("hh:mm a"),
+
             weekends,
             status,
             deliveryCharge,
-        }
+
+            ordersSummary: {
+                pending,
+                accepted,
+                ready,
+                delivered,
+                rejected,
+                totalOrders,
+            },
+
+            totalIncome,
+        };
 
         return {
             body,
-        }
-
+        };
     } catch (error) {
         // console.log("service error", error);
         throw error;
     }
-}
+};
 
 export const serviceShopUpdate = async (requestBody, user) => {
     try {
