@@ -17,6 +17,21 @@ const Service = sequelize.define("Service", {
             }
         }
     },
+    description: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+            len: {
+                args: [2, 1000],
+                msg: "Description must be between 2 and 1000 characters long",
+            }
+        }
+    },
+    isActive: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true,
+        allowNull: false,
+    },
 },
     {
         timestamps: true,
