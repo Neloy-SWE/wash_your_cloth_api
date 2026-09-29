@@ -24,7 +24,7 @@ export const serviceOrderPlace = async (requestBody, user) => {
                 isActive: true,
             },
             include: [
-                { model: db.Service, attributes: ["name"] },
+                { model: db.Service, attributes: ["name", "description"] },
                 { model: db.Item, attributes: ["name"] },
             ],
             transaction: t,
@@ -145,7 +145,7 @@ export const serviceOrderDetailsUser = async (orderId, userId) => {
                 },
                 {
                     model: db.OrderItem,
-                    attributes: ["id", "serviceName", "itemName", "quantity", "unitPrice", "isIronPress", "ironPressPrice", "totalPrice"]
+                    attributes: ["id", "serviceName", "itemName", "description", "quantity", "unitPrice", "isIronPress", "ironPressPrice", "totalPrice"]
                 }
             ],
         });
@@ -196,7 +196,7 @@ export const serviceOrderDetailsShop = async (orderId, userId) => {
                 },
                 {
                     model: db.OrderItem,
-                    attributes: ["id", "serviceName", "itemName", "quantity", "unitPrice", "isIronPress", "ironPressPrice", "totalPrice"]
+                    attributes: ["id", "serviceName", "itemName", "description", "quantity", "unitPrice", "isIronPress", "ironPressPrice", "totalPrice"]
                 }
             ],
         });

@@ -1,9 +1,45 @@
 import { managerError } from "../../utils/manager_error.js";
-import { serviceResourceItemActivation, serviceResourceItemAdd, serviceResourceItemList, serviceResourcePriceActivation, serviceResourcePriceAdd, serviceResourcePriceList, serviceResourcePriceUpate, serviceResourceServiceList } from "./service_resource.js";
+import { serviceResourceItemActivation, serviceResourceItemAdd, serviceResourceItemList, serviceResourcePriceActivation, serviceResourcePriceAdd, serviceResourcePriceList, serviceResourcePriceUpate, serviceResourceServiceActivation, serviceResourceServiceAdd, serviceResourceServiceList, serviceResourceServiceUpdate } from "./service_resource.js";
+
+// todo: item: update
+
+export const controllerResourceServiceAdd = async (req, res, next) => {
+    try {
+        managerError(req.body, "service");
+        const result = await serviceResourceServiceAdd(req.body, req.user);
+        res.status(201).json(result);
+    } catch (error) {
+        // console.log("controller error", error);
+        next(error);
+    }
+}
+
+export const controllerResourceServiceUpdate = async (req, res, next) => {
+    try {
+        managerError(req.params.serviceId, "id");
+        managerError(req.body, "service");
+        const result = await serviceResourceServiceUpdate(req.body, req.params.serviceId, req.user.id);
+        res.status(200).json(result);
+    } catch (error) {
+        // console.log("controller error", error);
+        next(error);
+    }
+}
+
+export const controllerResourceServiceActivation = async (req, res, next) => {
+    try {
+        managerError(req.params.serviceId, "id");
+        const result = await serviceResourceServiceActivation(req.params.serviceId, req.user.id);
+        res.status(200).json(result);
+    } catch (error) {
+        // console.log("controller error", error);
+        next(error);
+    }
+}
 
 export const controllerResourceServiceList = async (req, res, next) => {
     try {
-        const result = await serviceResourceServiceList();
+        const result = await serviceResourceServiceList(req.user.id);
         res.status(200).json(result);
     } catch (error) {
         // console.log("controller error", error);
@@ -17,6 +53,18 @@ export const controllerResourceItemAdd = async (req, res, next) => {
         const result = await serviceResourceItemAdd(req.body, req.user);
         res.status(201).json(result);
 
+    } catch (error) {
+        // console.log("controller error", error);
+        next(error);
+    }
+}
+
+export const controllerResourceItemUpdate = async (req, res, next) => {
+    try {
+        managerError(req.params.itemId, "id");
+        managerError(req.body, "item");
+        const result = await serviceResourceItemUpdate(req.body, req.params.itemId, req.user.id);
+        res.status(200).json(result);
     } catch (error) {
         // console.log("controller error", error);
         next(error);

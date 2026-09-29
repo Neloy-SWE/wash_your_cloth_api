@@ -23,6 +23,7 @@ const managerOrderPrice = (items, priceList) => {
         return {
             serviceName: price.Service ? price.Service.name : "Unknown Service",
             itemName: price.Item ? price.Item.name : "Unknown Item",
+            description: price.Service ? price.Service.description : "No description available",
             quantity: userItem.quantity,
             unitPrice: unitPrice,
             isIronPress: userItem.isIronPress,
