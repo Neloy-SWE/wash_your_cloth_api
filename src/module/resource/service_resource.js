@@ -31,9 +31,19 @@ export const serviceResourceServiceAdd = async (requestBody, user) => {
     }
 }
 
-export const serviceResourceServiceList = async () => {
+export const serviceResourceServiceList = async (userId) => {
     try {
-        const serviceList = await db.Service.findAll();
+        const serviceList = await db.Service.findAll({
+            where: {
+                userId
+            },
+            attributes: [
+                "id",
+                "name",
+                "description",
+                "isActive",
+            ]
+        });
 
         return serviceList;
 
@@ -68,6 +78,32 @@ export const serviceResourceServiceUpdate = async (requestBody, id, userId) => {
     }
 }
 
+export const serviceResourceServiceActivation = async (id, userId) => {
+    try {
+        const service = await db.Service.findOne({
+            where: {
+                id,
+                userId,
+            }
+        });
+
+        if (!service) {
+            generateError("Invalid service", 400);
+        }
+
+        const updateService = await service.update({ isActive: !service.isActive });
+
+        return {
+            status: "success",
+            message: "Service status updated",
+        };
+    }
+    catch (error) {
+        // console.log("service error", error);
+        throw error;
+    }
+}
+
 export const serviceResourceItemAdd = async (requestBody, user) => {
     try {
         const { itemName } = requestBody;
@@ -95,6 +131,31 @@ export const serviceResourceItemAdd = async (requestBody, user) => {
             message: "Item added",
         }
 
+    } catch (error) {
+        // console.log("service error", error);
+        throw error;
+    }
+}
+
+export const serviceResourceItemUpdate = async (requestBody, id, userId) => {
+    try {
+        const currentItem = await db.Item.findOne({
+            where: {
+                id,
+                userId,
+            }
+        });
+
+        if (!currentItem) {
+            generateError("Invalid item", 400);
+        }
+
+        const updateItem = await currentItem.update(requestBody);
+
+        return {
+            status: "success",
+            message: "Item details updated",
+        };
     } catch (error) {
         // console.log("service error", error);
         throw error;
