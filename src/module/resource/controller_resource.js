@@ -1,5 +1,5 @@
 import { managerError } from "../../utils/manager_error.js";
-import { serviceResourceItemActivation, serviceResourceItemAdd, serviceResourceItemList, serviceResourcePriceActivation, serviceResourcePriceAdd, serviceResourcePriceList, serviceResourcePriceUpate, serviceResourceServiceAdd, serviceResourceServiceList } from "./service_resource.js";
+import { serviceResourceItemActivation, serviceResourceItemAdd, serviceResourceItemList, serviceResourcePriceActivation, serviceResourcePriceAdd, serviceResourcePriceList, serviceResourcePriceUpate, serviceResourceServiceAdd, serviceResourceServiceList, serviceResourceServiceUpdate } from "./service_resource.js";
 
 // todo: create add, update, delete (active, deactivate) service per shop
 // todo: item: update
@@ -16,7 +16,15 @@ export const controllerResourceServiceAdd = async (req, res, next) => {
 }
 
 export const controllerResourceServiceUpdate = async (req, res, next) => {
-
+    try {
+        managerError(req.params.serviceId, "id");
+        managerError(req.body, "service");
+        const result = await serviceResourceServiceUpdate(req.body, req.params.serviceId, req.user.id);
+        res.status(200).json(result);
+    } catch (error) {
+        // console.log("controller error", error);
+        next(error);
+    }
 }
 
 export const controllerResourceServiceActivation = async (req, res, next) => {

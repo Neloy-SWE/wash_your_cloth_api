@@ -43,6 +43,31 @@ export const serviceResourceServiceList = async () => {
     }
 }
 
+export const serviceResourceServiceUpdate = async (requestBody, id, userId) => {
+    try {
+        const currentService = await db.Service.findOne({
+            where: {
+                id,
+                userId,
+            }
+        });
+
+        if (!currentService) {
+            generateError("Invalid service", 400);
+        }
+
+        const updateService = await currentService.update(requestBody);
+
+        return {
+            status: "success",
+            message: "Service details updated",
+        }
+    } catch (error) {
+        // console.log("service error", error);
+        throw error;
+    }
+}
+
 export const serviceResourceItemAdd = async (requestBody, user) => {
     try {
         const { itemName } = requestBody;
