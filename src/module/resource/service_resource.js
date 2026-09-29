@@ -2,6 +2,35 @@ import { col } from "sequelize";
 import db from "../../model/index_model.js";
 import { generateError, managerError } from "../../utils/manager_error.js";
 
+export const serviceResourceServiceAdd = async (requestBody, user) => {
+    try {
+        const { serviceName } = requestBody;
+        const { id } = user;
+        const existingService = await db.Service.findOne(
+            {
+                where: {
+                    name: serviceName,
+                    userId: id,
+                }
+            }
+        );
+
+        if (existingService) {
+            generateError("Service already exist", 400);
+        }
+
+        const service = await db.Service.create(requestBody);
+
+        return {
+            status: "success",
+            message: "Service added",
+        }
+    } catch (error) {
+        // console.log("service error", error);
+        throw error;
+    }
+}
+
 export const serviceResourceServiceList = async () => {
     try {
         const serviceList = await db.Service.findAll();
