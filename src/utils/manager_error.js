@@ -14,6 +14,7 @@ import validatorItem from "../validator/validator_item.js";
 import validatorPrice from "../validator/validator_price.js";
 import validatorUpdatePrice from "../validator/validator_update_price.js";
 import validatorOrder from "../validator/validator_order.js";
+import validatorService from "../validator/validator_service.js";
 
 const myEnv = dotenv.config();
 dotenvExpand.expand(myEnv);
@@ -113,6 +114,12 @@ export const managerError = (object, key) => {
         case "order":
             {
                 const { error } = validatorOrder.validate(object);
+                currentError = error;
+                break;
+            }
+        case "service":
+            {
+                const { error } = validatorService.validate(object);
                 currentError = error;
                 break;
             }
