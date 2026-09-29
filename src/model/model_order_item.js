@@ -27,6 +27,16 @@ const OrderItem = sequelize.define("OrderItem", {
             }
         }
     },
+    description: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+            len: {
+                args: [2, 1000],
+                msg: "Description must be between 2 and 1000 characters long",
+            }
+        }
+    },
     quantity: {
         type: DataTypes.INTEGER,
         allowNull: false,

@@ -36,8 +36,8 @@ Order.belongsTo(Shop, { foreignKey: "shopId" });
 Order.hasMany(OrderItem, { foreignKey: "orderId" });
 OrderItem.belongsTo(Order, { foreignKey: "orderId" });
 
-Shop.hasMany(Service, { foreignKey: "shopId" });
-Service.belongsTo(Shop, { foreignKey: "shopId" });
+User.hasMany(Service, { foreignKey: "userId" });
+Service.belongsTo(User, { foreignKey: "userId" });
 
 const db = {
     sequelize,
