@@ -218,8 +218,12 @@ export const serviceResourcePriceAdd = async (requestBody, userId) => {
             },
         });
 
-        if (!checkService) {
+        if (!checkService || checkService.userId !== userId) {
             generateError("Invalid service", 400);
+        }
+
+        if (!checkService.isActive) {
+            generateError("This service is not available", 400);
         }
 
         const checkItem = await db.Item.findOne({
@@ -260,11 +264,14 @@ export const serviceResourcePriceList = async (keyId, role) => {
         let queryAttributes;
         let mainCondition;
         let itemCondition;
+        let serviceCondition;
 
         if (role === "shop") {
             queryAttributes = [
                 "id",
                 [col("Service.name"), "serviceName"],
+                [col("Service.isActive"), "isServiceActive"],
+                [col("Service.description"), "description"],
                 [col("Item.name"), "itemName"],
                 [col("Item.isActive"), "isItemActive"],
                 "price",
@@ -276,6 +283,9 @@ export const serviceResourcePriceList = async (keyId, role) => {
             itemCondition = {
                 userId: keyId,
             };
+            serviceCondition = {
+                userId: keyId,
+            }
         } else if (role === "user") {
             const shop = await db.Shop.findByPk(keyId);
             if (!shop) {
@@ -284,6 +294,7 @@ export const serviceResourcePriceList = async (keyId, role) => {
             queryAttributes = [
                 "id",
                 [col("Service.name"), "serviceName"],
+                [col("Service.description"), "description"],
                 [col("Item.name"), "itemName"],
                 "price",
                 "discountPrice",
@@ -293,6 +304,10 @@ export const serviceResourcePriceList = async (keyId, role) => {
                 isActive: true,
             };
             itemCondition = {
+                userId: shop.userId,
+                isActive: true,
+            }
+            serviceCondition = {
                 userId: shop.userId,
                 isActive: true,
             }
@@ -309,6 +324,7 @@ export const serviceResourcePriceList = async (keyId, role) => {
                 },
                 {
                     model: db.Service,
+                    where: serviceCondition,
                     attributes: [],
                 }
             ]
@@ -326,17 +342,30 @@ export const serviceResourcePriceActivation = async (id, userId) => {
             where: {
                 id
             },
-            include: [{
-                model: db.Item,
-                required: true,
-                include: [{
-                    model: db.User,
+            include: [
+                {
+                    model: db.Item,
                     required: true,
-                    where: {
-                        id: userId,
-                    }
-                }],
-            }],
+                    include: [{
+                        model: db.User,
+                        required: true,
+                        where: {
+                            id: userId,
+                        }
+                    }],
+                },
+                {
+                    model: db.Service,
+                    required: true,
+                    include: [{
+                        model: db.User,
+                        required: true,
+                        where: {
+                            id: userId,
+                        }
+                    }],
+                }
+            ],
         });
 
         if (!price) {
@@ -362,17 +391,29 @@ export const serviceResourcePriceUpate = async (requestBody, id, userId) => {
             where: {
                 id
             },
-            include: [{
-                model: db.Item,
-                required: true,
-                include: [{
-                    model: db.User,
+            include: [
+                {
+                    model: db.Item,
                     required: true,
-                    where: {
-                        id: userId,
-                    }
+                    include: [{
+                        model: db.User,
+                        required: true,
+                        where: {
+                            id: userId,
+                        }
+                    }],
+                },
+                {
+                    model: db.Service,
+                    required: true,
+                    include: [{
+                        model: db.User,
+                        required: true,
+                        where: {
+                            id: userId,
+                        }
+                    }]
                 }],
-            }],
         });
 
         if (!currentPrice) {
