@@ -1,5 +1,5 @@
 import { managerError } from "../../utils/manager_error.js";
-import { serviceResourceItemActivation, serviceResourceItemAdd, serviceResourceItemList, serviceResourcePriceActivation, serviceResourcePriceAdd, serviceResourcePriceList, serviceResourcePriceUpate, serviceResourceServiceActivation, serviceResourceServiceAdd, serviceResourceServiceList, serviceResourceServiceUpdate } from "./service_resource.js";
+import { serviceResourceItemActivation, serviceResourceItemAdd, serviceResourceItemList, serviceResourceItemUpdate, serviceResourcePriceActivation, serviceResourcePriceAdd, serviceResourcePriceList, serviceResourcePriceUpate, serviceResourceServiceActivation, serviceResourceServiceAdd, serviceResourceServiceList, serviceResourceServiceUpdate } from "./service_resource.js";
 
 // todo: item: update
 

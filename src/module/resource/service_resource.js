@@ -19,7 +19,8 @@ export const serviceResourceServiceAdd = async (requestBody, user) => {
             generateError("Service already exist", 400);
         }
 
-        const service = await db.Service.create(requestBody);
+        const { serviceName: name, description } = requestBody;
+        const service = await db.Service.create({ name, description, userId: id });
 
         return {
             status: "success",
@@ -39,10 +40,11 @@ export const serviceResourceServiceList = async (userId) => {
             },
             attributes: [
                 "id",
-                "name",
+                ["name", "serviceName"],
                 "description",
                 "isActive",
-            ]
+            ],
+            order: [['createdAt', 'DESC']],
         });
 
         return serviceList;
@@ -66,7 +68,9 @@ export const serviceResourceServiceUpdate = async (requestBody, id, userId) => {
             generateError("Invalid service", 400);
         }
 
-        const updateService = await currentService.update(requestBody);
+        const { serviceName: name, description } = requestBody;
+
+        const updateService = await currentService.update({ name, description });
 
         return {
             status: "success",
@@ -150,7 +154,8 @@ export const serviceResourceItemUpdate = async (requestBody, id, userId) => {
             generateError("Invalid item", 400);
         }
 
-        const updateItem = await currentItem.update(requestBody);
+        const { itemName: name } = requestBody;
+        const updateItem = await currentItem.update({ name });
 
         return {
             status: "success",
@@ -170,9 +175,10 @@ export const serviceResourceItemList = async (userId) => {
             },
             attributes: [
                 "id",
-                "name",
+                ["name", "itemName"],
                 "isActive",
-            ]
+            ],
+            order: [['createdAt', 'DESC']],
         });
 
         return itemList;
@@ -327,7 +333,8 @@ export const serviceResourcePriceList = async (keyId, role) => {
                     where: serviceCondition,
                     attributes: [],
                 }
-            ]
+            ],
+            order: [['createdAt', 'DESC']],
         });
         return priceList;
     } catch (error) {
