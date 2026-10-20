@@ -8,6 +8,7 @@ import Item from "./model_item.js";
 import Price from "./model_price.js";
 import Order from "./model_order.js";
 import OrderItem from "./model_order_item.js";
+import AppNotification from "./model_notification.js";
 
 User.hasMany(Token, { foreignKey: "userId" });
 Token.belongsTo(User, { foreignKey: "userId" });
@@ -39,6 +40,9 @@ OrderItem.belongsTo(Order, { foreignKey: "orderId" });
 User.hasMany(Service, { foreignKey: "userId" });
 Service.belongsTo(User, { foreignKey: "userId" });
 
+User.hasMany(AppNotification, { foreignKey: "userId" });
+AppNotification.belongsTo(User, { foreignKey: "userId" });
+
 const db = {
     sequelize,
     User,
@@ -50,6 +54,7 @@ const db = {
     Price,
     Order,
     OrderItem,
+    AppNotification,
 }
 
 export default db;
