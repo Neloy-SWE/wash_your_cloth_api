@@ -8,7 +8,7 @@ import Item from "./model_item.js";
 import Price from "./model_price.js";
 import Order from "./model_order.js";
 import OrderItem from "./model_order_item.js";
-import AppNotification from "./model_notification.js";
+import AppNotification from "./model_app_notification.js";
 
 User.hasMany(Token, { foreignKey: "userId" });
 Token.belongsTo(User, { foreignKey: "userId" });
