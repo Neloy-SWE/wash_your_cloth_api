@@ -88,7 +88,7 @@ export const serviceShopView = async (user) => {
                 ],
                 [
                     db.sequelize.literal(
-                        `COUNT(*) FILTER (WHERE status = 'delivered')`
+                        `COUNT(*) FILTER (WHERE status = 'received')`
                     ),
                     "deliveredCount",
                 ],
@@ -104,7 +104,7 @@ export const serviceShopView = async (user) => {
                 ],
                 [
                     db.sequelize.literal(
-                        `COALESCE(SUM("totalPrice") FILTER (WHERE status = 'delivered'), 0)`
+                        `COALESCE(SUM("totalPrice") FILTER (WHERE status = 'received'), 0)`
                     ),
                     "totalIncome",
                 ],
