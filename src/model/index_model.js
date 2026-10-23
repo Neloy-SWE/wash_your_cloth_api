@@ -1,6 +1,7 @@
 import { sequelize } from "../config/database.js";
 import User from "./model_user.js";
 import Token from "./model_token.js";
+import Session from "./model_session.js";
 import OTP from "./model_otp.js";
 import Shop from "./model_shop.js";
 import Service from "./model_service.js";
@@ -10,8 +11,11 @@ import Order from "./model_order.js";
 import OrderItem from "./model_order_item.js";
 import AppNotification from "./model_app_notification.js";
 
-User.hasMany(Token, { foreignKey: "userId" });
-Token.belongsTo(User, { foreignKey: "userId" });
+User.hasMany(Session, { foreignKey: "userId" });
+Session.belongsTo(User, { foreignKey: "userId" });
+
+Session.hasMany(Token, { foreignKey: "sessionId" });
+Token.belongsTo(Session, { foreignKey: "sessionId" });
 
 User.hasMany(OTP, { foreignKey: "userId" });
 OTP.belongsTo(User, { foreignKey: "userId" });
@@ -47,6 +51,7 @@ const db = {
     sequelize,
     User,
     Token,
+    Session,
     OTP,
     Shop,
     Service,

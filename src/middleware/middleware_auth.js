@@ -1,4 +1,3 @@
-import jwt from "jsonwebtoken";
 import db from "../model/index_model.js";
 import { generateError } from "../utils/manager_error.js";
 import { verifyToken } from "../utils/manager_jwt_token.js";
@@ -12,9 +11,23 @@ export const middlewareAuth = async (req, res, next) => {
     }
 
     const payload = verifyToken(token, errorMessage, 401);
+    console.log("payload", payload);
+    if (!payload?.id || !payload?.role || !payload?.sessionId) {
+      generateError(errorMessage, 401);
+    }
 
-    const user = await db.User.findByPk(payload.id);
-    if (!user) {
+    const [user, session] = await Promise.all([
+      db.User.findByPk(payload.id),
+      db.Session.findOne({
+        where: {
+          id: payload.sessionId,
+          userId: payload.id,
+          revokedAt: null,
+        },
+      }),
+    ]);
+    if (!user || user.role !== payload.role || !session
+      || session.expiresAt <= new Date()) {
       generateError(errorMessage, 401);
     }
 
@@ -24,6 +37,7 @@ export const middlewareAuth = async (req, res, next) => {
 
     req.user = user;
     req.role = payload.role;
+    req.sessionId = session.id;
     next();
   }
   catch (error) {

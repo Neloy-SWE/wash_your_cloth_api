@@ -1,6 +1,5 @@
 import { generateError, managerError } from "../../utils/manager_error.js";
-import validatorRegistrationUser from "../../validator/validator_registration_user.js";
-import { serviceAuthLogin, serviceAuthOTPVerify, serviceAuthRefreshToken, serviceAuthRegistration } from "./service_auth.js";
+import { serviceAuthLogin, serviceAuthLogout, serviceAuthOTPVerify, serviceAuthRefreshToken, serviceAuthRegistration } from "./service_auth.js";
 
 export const controllerAuthRegistration = async (req, res, next) => {
     try {
@@ -54,6 +53,23 @@ export const controllerAuthRefreshToken = async (req, res, next) => {
         next(error);
     }
 }
+
+export const controllerAuthLogout = async (req, res, next) => {
+    try {
+        const { allDevices = false } = req.body ?? {};
+        if (typeof allDevices !== "boolean") {
+            generateError("invalid information", 400);
+        }
+        const result = await serviceAuthLogout(
+            req.user.id,
+            req.sessionId,
+            allDevices,
+        );
+        res.status(200).json(result);
+    } catch (error) {
+        next(error);
+    }
+};
 
 export const controllerAuthOTPVerify = async (req, res, next) => {
 
