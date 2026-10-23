@@ -17,6 +17,10 @@ const validatorLoginUser = Joi.object({
         "string.valid": "Role must be either 'user' or 'shop'",
         "string.empty": "Role cannot be empty",
     }),
+    installationId: Joi.string().guid({ version: ["uuidv4"] }).required().messages({
+        "any.required": "Installation ID is required",
+        "string.guid": "Invalid InsTallation ID",
+    }),
 });
 
 export default validatorLoginUser;

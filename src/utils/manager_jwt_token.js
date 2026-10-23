@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import jwt from "jsonwebtoken";
 import dotenv from 'dotenv';
 import dotenvExpand from 'dotenv-expand';
@@ -36,3 +37,6 @@ export const verifyToken = (token, errorMessage = "Invalid token", statusCode = 
         generateError(errorMessage, statusCode);
     }
 };
+
+export const hashRefreshToken = (refreshToken) =>
+    createHash("sha256").update(refreshToken).digest("hex");
