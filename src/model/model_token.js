@@ -1,4 +1,4 @@
-import { DataTypes, STRING } from "sequelize";
+import { DataTypes } from "sequelize";
 import { sequelize } from "../config/database.js";
 
 const Token = sequelize.define("Token", {
@@ -15,13 +15,18 @@ const Token = sequelize.define("Token", {
     //     type: DataTypes.DATE,
     //     allowNull: false,
     // },
-    refreshToken: {
+    refreshTokenHash: {
         type: DataTypes.STRING,
         allowNull: false,
+        unique: true,
     },
     expirationRefreshToken: {
         type: DataTypes.DATE,
         allowNull: false,
+    },
+    replacedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
     },
 },
     {
