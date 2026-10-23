@@ -6,12 +6,14 @@ Solution for Online Laundry & Dry Cleaning Service Management System.
 - Role baed user authentication and authorization with jwt token system
 - Rate limit for requests
 - Middleware-based architecture
+- Persisted, user-scoped order notifications with Socket.IO realtime delivery
 
 ## Tools & Technologies
 - JavaScript
 - Node.js
 - Express.js
 - Postgresql (via sequelize)
+- Socket.IO
 
 ## Libraries
 - "bcrypt": "^6.0.0",
@@ -25,6 +27,7 @@ Solution for Online Laundry & Dry Cleaning Service Management System.
 - "pg": "^8.20.0",
 - "pg-hstore": "^2.3.4",
 - "sequelize": "^6.37.8",
+- "socket.io": "^4.8.4",
 - "uuid": "^14.0.0",
 - "validator": "^13.15.35"
 
@@ -34,6 +37,7 @@ Solution for Online Laundry & Dry Cleaning Service Management System.
 │   
 ├───config
 │       database.js
+│       socket.js
 │       
 ├───middleware
 │       middleware_auth.js
@@ -42,6 +46,7 @@ Solution for Online Laundry & Dry Cleaning Service Management System.
 ├───model
 │       index_model.js
 │       model_item.js
+│       model_app_notification.js
 │       model_order.js
 │       model_order_item.js
 │       model_otp.js
@@ -62,6 +67,11 @@ Solution for Online Laundry & Dry Cleaning Service Management System.
 │   │       route_order.js
 │   │       service_order.js
 │   │       
+│   ├───notification
+│   │       controller_notification.js
+│   │       route_notification.js
+│   │       service_notification.js
+│   │
 │   ├───resource
 │   │       controller_resource.js
 │   │       route_resource.js

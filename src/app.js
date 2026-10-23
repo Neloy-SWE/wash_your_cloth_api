@@ -1,4 +1,5 @@
 import express from "express";
+import { createServer } from "node:http";
 import routerAuth from "./module/auth/route_auth.js";
 import dotenv from 'dotenv';
 import dotenvExpand from 'dotenv-expand';
@@ -8,11 +9,14 @@ import routeUser from "./module/user/route_user.js";
 import routerShop from "./module/shop/route_shop.js";
 import routerResource from "./module/resource/route_resource.js";
 import routerOrder from "./module/order/route_order.js";
+import routerNotification from "./module/notification/route_notification.js";
+import { initializeSocket } from "./config/socket.js";
 
 const myEnv = dotenv.config();
 dotenvExpand.expand(myEnv);
 
 const app = express();
+const server = createServer(app);
 
 app.use(express.json());
 
@@ -45,6 +49,7 @@ app.use("/user", routeUser); // profile
 app.use("/shop", routerShop); // shop
 app.use("/resource", routerResource); // resource
 app.use("/order", routerOrder); // order
+app.use("/notification", routerNotification); // notifications
 
 // Global error handling middleware
 app.use((error, req, res, next) => {
@@ -59,13 +64,9 @@ db.sequelize.sync({ alter: true }).then(() => { // modify/add new column along w
     console.log("Database synchronized");
 
     const PORT = process.env.PORT;
-    // app.listen(PORT, () => {
-    //     console.log(`Server is running on port ${PORT}`);
-    // });
-
-    // allows access from any device on the network:
     const HOST = process.env.HOST;
-    app.listen(PORT, HOST, () => {
+    initializeSocket(server);
+    server.listen(PORT, HOST, () => {
         console.log(`Server is running on port ${PORT} and host ${HOST}`);
     });
 
