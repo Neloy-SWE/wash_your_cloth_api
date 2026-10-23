@@ -27,10 +27,14 @@ export const createAppNotification = async ({
     metaData,
 }, { transaction });
 
-export const publishAppNotification = (notification) => {
+export const publishAppNotification = async (notification) => {
     const payload = notification.get({ plain: true });
     const { userId, ...userNotification } = payload;
-    emitToUser(userId, "notification:new", userNotification);
+    try {
+        await emitToUser(userId, "notification:new", userNotification);
+    } catch (error) {
+        console.error("Unable to emit notification to active sessions:", error);
+    }
 };
 
 export const serviceNotificationList = async (userId, query) => {

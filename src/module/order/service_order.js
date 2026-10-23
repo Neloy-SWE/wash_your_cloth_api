@@ -61,7 +61,7 @@ export const serviceOrderPlace = async (requestBody, user) => {
         return order;
     });
 
-    publishAppNotification(notification);
+    await publishAppNotification(notification);
     return {
         status: "success",
         message: "Your order is placed",
@@ -159,7 +159,7 @@ export const serviceOrderUpdateStatus = async (orderId, userId, nextStatus) => {
         return currentOrder;
     });
 
-    publishAppNotification(notification);
+    await publishAppNotification(notification);
     return {
         status: "success",
         message: `Order ${nextStatus}`,
