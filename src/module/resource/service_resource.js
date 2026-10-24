@@ -1,6 +1,7 @@
-import { col } from "sequelize";
+import { col, Op } from "sequelize";
 import db from "../../model/index_model.js";
 import { generateError, managerError } from "../../utils/manager_error.js";
+import { getPaginatedResult, getPagination } from "../../utils/manager_pagination.js";
 
 export const serviceResourceServiceAdd = async (requestBody, user) => {
     try {
@@ -32,22 +33,31 @@ export const serviceResourceServiceAdd = async (requestBody, user) => {
     }
 }
 
-export const serviceResourceServiceList = async (userId) => {
+export const serviceResourceServiceList = async (userId, query = {}) => {
     try {
-        const serviceList = await db.Service.findAll({
-            where: {
-                userId
-            },
+        const pagination = getPagination(query);
+        const where = { userId };
+        if (pagination.search) {
+            where.name = { [Op.iLike]: pagination.searchPattern };
+        }
+        const { count: totalItem, rows: serviceList } = await db.Service.findAndCountAll({
+            where,
             attributes: [
                 "id",
                 ["name", "serviceName"],
                 "description",
                 "isActive",
             ],
-            order: [['createdAt', 'DESC']],
+            order: [['createdAt', 'DESC'], ['id', 'DESC']],
+            limit: pagination.limit,
+            offset: pagination.offset,
         });
 
-        return serviceList;
+        return getPaginatedResult({
+            ...pagination,
+            totalItem,
+            items: serviceList,
+        });
 
     } catch (error) {
         // console.log("service error", error);
@@ -167,21 +177,30 @@ export const serviceResourceItemUpdate = async (requestBody, id, userId) => {
     }
 }
 
-export const serviceResourceItemList = async (userId) => {
+export const serviceResourceItemList = async (userId, query = {}) => {
     try {
-        const itemList = await db.Item.findAll({
-            where: {
-                userId
-            },
+        const pagination = getPagination(query);
+        const where = { userId };
+        if (pagination.search) {
+            where.name = { [Op.iLike]: pagination.searchPattern };
+        }
+        const { count: totalItem, rows: itemList } = await db.Item.findAndCountAll({
+            where,
             attributes: [
                 "id",
                 ["name", "itemName"],
                 "isActive",
             ],
-            order: [['createdAt', 'DESC']],
+            order: [['createdAt', 'DESC'], ['id', 'DESC']],
+            limit: pagination.limit,
+            offset: pagination.offset,
         });
 
-        return itemList;
+        return getPaginatedResult({
+            ...pagination,
+            totalItem,
+            items: itemList,
+        });
 
     } catch (error) {
         // console.log("service error", error);
@@ -264,8 +283,9 @@ export const serviceResourcePriceAdd = async (requestBody, userId) => {
     }
 }
 
-export const serviceResourcePriceList = async (keyId, role) => {
+export const serviceResourcePriceList = async (keyId, role, query = {}) => {
     try {
+        const pagination = getPagination(query);
 
         let queryAttributes;
         let mainCondition;
@@ -319,8 +339,16 @@ export const serviceResourcePriceList = async (keyId, role) => {
             }
         }
 
-        const priceList = await db.Price.findAll({
-            where: mainCondition,
+        const where = { ...mainCondition };
+        if (pagination.search) {
+            where[Op.or] = [
+                { "$Service.name$": { [Op.iLike]: pagination.searchPattern } },
+                { "$Item.name$": { [Op.iLike]: pagination.searchPattern } },
+            ];
+        }
+
+        const { count: totalItem, rows: priceList } = await db.Price.findAndCountAll({
+            where,
             attributes: queryAttributes,
             include: [
                 {
@@ -334,9 +362,16 @@ export const serviceResourcePriceList = async (keyId, role) => {
                     attributes: [],
                 }
             ],
-            order: [['createdAt', 'DESC']],
+            order: [['createdAt', 'DESC'], ['id', 'DESC']],
+            limit: pagination.limit,
+            offset: pagination.offset,
+            subQuery: false,
         });
-        return priceList;
+        return getPaginatedResult({
+            ...pagination,
+            totalItem,
+            items: priceList,
+        });
     } catch (error) {
         // console.log("service error", error);
         throw error;

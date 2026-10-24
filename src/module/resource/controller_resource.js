@@ -39,7 +39,7 @@ export const controllerResourceServiceActivation = async (req, res, next) => {
 
 export const controllerResourceServiceList = async (req, res, next) => {
     try {
-        const result = await serviceResourceServiceList(req.user.id);
+        const result = await serviceResourceServiceList(req.user.id, req.query);
         res.status(200).json(result);
     } catch (error) {
         // console.log("controller error", error);
@@ -73,7 +73,7 @@ export const controllerResourceItemUpdate = async (req, res, next) => {
 
 export const controllerResourceItemList = async (req, res, next) => {
     try {
-        const result = await serviceResourceItemList(req.user.id);
+        const result = await serviceResourceItemList(req.user.id, req.query);
         res.status(200).json(result);
 
     } catch (error) {
@@ -108,7 +108,7 @@ export const controllerResourcePriceAdd = async (req, res, next) => {
 
 export const controllerResourcePriceListShop = async (req, res, next) => {
     try {
-        const result = await serviceResourcePriceList(req.user.id, req.role);
+        const result = await serviceResourcePriceList(req.user.id, req.role, req.query);
         res.status(200).json(result);
     } catch (error) {
         // console.log("controller error", error);
@@ -119,7 +119,7 @@ export const controllerResourcePriceListShop = async (req, res, next) => {
 export const controllerResourcePriceListUser = async (req, res, next) => {
     try {
         managerError(req.params.shopId, "id");
-        const result = await serviceResourcePriceList(req.params.shopId, req.role);
+        const result = await serviceResourcePriceList(req.params.shopId, req.role, req.query);
         res.status(200).json(result);
     } catch (error) {
         // console.log("controller error", error);
