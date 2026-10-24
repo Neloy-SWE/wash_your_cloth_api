@@ -1,6 +1,7 @@
-import { col } from "sequelize";
+import { col, Op } from "sequelize";
 import db from "../../model/index_model.js";
 import { generateError } from "../../utils/manager_error.js";
+import { getPaginatedResult, getPagination } from "../../utils/manager_pagination.js";
 import { DateTime } from "luxon";
 
 // export const serviceShopOpen = async (requestBody, user) => {
@@ -210,9 +211,15 @@ export const serviceShopUpdate = async (requestBody, user) => {
     }
 }
 
-export const serviceShopList = async () => {
+export const serviceShopList = async (query = {}) => {
     try {
-        const shopList = await db.Shop.findAll({
+        const pagination = getPagination(query);
+        const where = {};
+        if (pagination.search) {
+            where.shopName = { [Op.iLike]: pagination.searchPattern };
+        }
+        const { count: totalItem, rows: shopList } = await db.Shop.findAndCountAll({
+            where,
             attributes: [
                 "id",
                 "shopName",
@@ -226,7 +233,10 @@ export const serviceShopList = async () => {
                     attributes: [],
                 },
             ],
+            order: [['createdAt', 'DESC'], ['id', 'DESC']],
             raw: true,
+            limit: pagination.limit,
+            offset: pagination.offset,
         });
 
         /**
@@ -236,7 +246,11 @@ export const serviceShopList = async () => {
          * 
          */
 
-        return shopList;
+        return getPaginatedResult({
+            ...pagination,
+            totalItem,
+            items: shopList,
+        });
 
     } catch (error) {
         // console.log("service error", error);
