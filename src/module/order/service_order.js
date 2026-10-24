@@ -1,9 +1,10 @@
-import { col } from "sequelize";
+import { col, Op } from "sequelize";
 import db from "../../model/index_model.js";
 import { generateError } from "../../utils/manager_error.js";
 import managerOrderPrice from "../../utils/manager_order_price.js";
 import managerTrakingId from "../../utils/manager_tracking_id.js";
 import validatorEntry from "../../validator/validator_entry.js";
+import { getPaginatedResult, getPagination } from "../../utils/manager_pagination.js";
 import { createAppNotification, publishAppNotification } from "../notification/service_notification.js";
 
 export const serviceOrderPlace = async (requestBody, user) => {
@@ -166,9 +167,10 @@ export const serviceOrderUpdateStatus = async (orderId, userId, nextStatus) => {
     };
 }
 
-export const serviceOrderList = async (userId, role) => {
+export const serviceOrderList = async (userId, role, query = {}) => {
 
     try {
+        const pagination = getPagination(query);
         let mainCondition;
 
         if (role === "shop") {
@@ -191,18 +193,28 @@ export const serviceOrderList = async (userId, role) => {
             };
         }
 
-        const orderList = await db.Order.findAll({
-            where: mainCondition,
+        const where = { ...mainCondition };
+        if (pagination.search) {
+            where.trackingId = { [Op.iLike]: pagination.searchPattern };
+        }
+        const { count: totalItem, rows: orderList } = await db.Order.findAndCountAll({
+            where,
             attributes: [
                 "id",
                 "trackingId",
                 "totalPrice",
                 "status",
             ],
-            order: [['createdAt', 'DESC']],
-        },);
+            order: [['createdAt', 'DESC'], ['id', 'DESC']],
+            limit: pagination.limit,
+            offset: pagination.offset,
+        });
 
-        return orderList;
+        return getPaginatedResult({
+            ...pagination,
+            totalItem,
+            items: orderList,
+        });
 
     } catch (error) {
         // console.log("service error", error);

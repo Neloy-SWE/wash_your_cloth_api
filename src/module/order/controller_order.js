@@ -15,7 +15,7 @@ export const controllerOrderPlace = async (req, res, next) => {
 
 export const controllerOrderList = async (req, res, next) => {
     try {
-        const result = await serviceOrderList(req.user.id, req.role);
+        const result = await serviceOrderList(req.user.id, req.role, req.query);
         res.status(200).json(result);
 
     } catch (error) {
