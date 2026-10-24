@@ -35,7 +35,7 @@ export const controllerShopUpdate = async (req, res, next) => {
 
 export const controllerShopList = async (req, res, next) => {
     try {
-        const result = await serviceShopList();
+        const result = await serviceShopList(req.query);
         res.status(200).json(result);
     } catch (error) {
         // console.log("controller error", error);
