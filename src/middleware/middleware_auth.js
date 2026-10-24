@@ -11,7 +11,6 @@ export const middlewareAuth = async (req, res, next) => {
     }
 
     const payload = verifyToken(token, errorMessage, 401);
-    console.log("payload", payload);
     if (!payload?.id || !payload?.role || !payload?.sessionId) {
       generateError(errorMessage, 401);
     }

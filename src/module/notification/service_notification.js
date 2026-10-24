@@ -1,6 +1,8 @@
 import db from "../../model/index_model.js";
 import { emitToUser } from "../../config/socket.js";
 import { generateError } from "../../utils/manager_error.js";
+import { Op } from "sequelize";
+import { getPagination } from "../../utils/manager_pagination.js";
 
 const notificationAttributes = [
     "id",
@@ -38,25 +40,27 @@ export const publishAppNotification = async (notification) => {
 };
 
 export const serviceNotificationList = async (userId, query) => {
-    const currentPage = query.currentPage === undefined ? 0 : Number(query.currentPage);
-    const pageSize = query.pageSize === undefined ? 15 : Number(query.pageSize);
-
-    if (!Number.isInteger(currentPage) || currentPage < 0
-        || !Number.isInteger(pageSize) || pageSize < 1 || pageSize > 100) {
-        generateError("Invalid pagination", 400);
+    const pagination = getPagination(query);
+    const where = { userId };
+    if (pagination.search) {
+        where[Op.or] = [
+            { title: { [Op.iLike]: pagination.searchPattern } },
+            { message: { [Op.iLike]: pagination.searchPattern } },
+            { metaData: { [Op.iLike]: pagination.searchPattern } },
+        ];
     }
 
     const { count: totalItem, rows: notifications } = await db.AppNotification.findAndCountAll({
-        where: { userId },
+        where,
         attributes: notificationAttributes,
-        order: [["createdAt", "DESC"]],
-        limit: pageSize,
-        offset: currentPage * pageSize,
+        order: [["createdAt", "DESC"], ["id", "DESC"]],
+        limit: pagination.limit,
+        offset: pagination.offset,
     });
 
     return {
-        currentPage,
-        pageSize,
+        currentPage: pagination.currentPage,
+        pageSize: pagination.pageSize,
         totalItem,
         notifications,
     };
